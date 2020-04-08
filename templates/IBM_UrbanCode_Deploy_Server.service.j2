@@ -1,0 +1,19 @@
+
+[Unit]
+Description = IBM UrbanCode Deploy Server
+After = network.target network.service
+
+[Service]
+ExecStartPre = /bin/sleep 10
+WorkingDirectory = {{ installation_location }}
+ExecStart = {{ installation_location }}/bin/server start
+ExecStop = {{ installation_location }}/bin/server stop
+Type = forking
+Restart = always
+RestartSec = 30
+TimeoutSec = 30
+User = {{ service_user }}
+Group = {{ service_group }}
+
+[Install]
+WantedBy = multi-user.target

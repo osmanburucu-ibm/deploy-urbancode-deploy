@@ -1,0 +1,5 @@
+[ucd_server]
+usrvxxx.local.net ansible_host=192.168.62.163
+
+[db_server]
+usrvxxx.local.net ansible_host=192.168.62.163

@@ -1,0 +1,81 @@
+# Licensed Materials - Property of IBM* and/or HCL**
+# UrbanCode Deploy
+# UrbanCode Build
+# UrbanCode Release
+# AnthillPro
+# (c) Copyright IBM Corporation 2011, 2017. All Rights Reserved.
+# (c) Copyright HCL Technologies Ltd. 2018. All Rights Reserved.
+#
+# U.S. Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+# * Trademark of International Business Machines
+# ** Trademark of HCL Technologies Limited
+# Installation directory of the agent
+locked/agent.home={{ install_agent_home }}
+
+# Installation settings if using the binary/config split mode. Valid value for agent.install.type is binary or config.
+#locked/agent.install.type=binary|config
+#locked/agent.binary.home=/opt/urbancode/ibm-ucdagentbinary
+
+# Path to the Java installation
+#IBM UrbanCode Deploy/java.home=
+
+# Name of the agent (should be unique)
+locked/agent.name={{ ucda_name }}
+
+# IP or host of the server or relay to connect to. This is only used for JMS communction.
+locked/agent.jms.remote.host={{ ucd_server_hostname }}
+locked/agent.jms.remote.port=7918
+#locked/agent.jms.remote.port=7916
+
+# IP or host of the relay
+#locked/agent.http.proxy.host=<proxy_host>
+#locked/agent.http.proxy.port=20080
+
+# If the agent should verify the certificate of the server or relay it connects to
+locked/agent.mutual_auth=false
+
+# Keystore setting if using a pre-built keystore and not the one created during installation
+#locked/agent.keystore=/opt/urbancode/keys/common.keystore
+#locked/agent.keystore.pwd=changeit
+
+# By default, the agent uses end-to-end encryption for server communication.
+# Setting agent.jms.disable_full_encryption to true disables that encryption.
+agent.jms.disable_full_encryption=false
+
+# By default, new agent installs will use Web communication for communicating with the server.
+# Setting agentcomm.enabled to false will revert back to the JMS for communicating with the server.
+agentcomm.enabled=true
+
+# Web socket url. This is only used for Web communication.
+agentcomm.server.uri=wss://{{ ucd_server_hostname }}:{{ agentcomm_uri_port }}
+#agentcomm.proxy.uri=http://relayHost:20080
+
+# If verify.server.identity is true, the agent attempts to verify the server certificate.
+# This setting improves security, but the server certificate must be imported into the keystore of the agent JRE.
+verify.server.identity=false
+
+# Windows service installation options
+locked/agent.service=true
+locked/agent.service.name=ibm-ucdagent
+locked/agent.service.login=.\\localsystem
+locked/agent.service.password=nopass
+locked/agent.service.autostart=false
+
+# z/OS deployment tools installation options
+# High-level qualifier and volume serial number to install the z/OS deployment tools
+mvs.hlq=
+mvs.volume=
+
+# Web URL for the UrbanCode Deploy server. If you have already specified the URL
+# for jms encryption, there's no need to specify it again.
+server.url=https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}
+
+# An authentication token generated from the UrbanCode Deploy server.
+# The token will be encrypted after it is used for the first time.
+server.token=
+
+# Specify repository.type=CODESTATION to store versions in UrbanCode Deploy server Codestation 
+# Specify repository.type=HFS to store versions in HFS folder <agent>/var/repository
+repository.type=CODESTATION

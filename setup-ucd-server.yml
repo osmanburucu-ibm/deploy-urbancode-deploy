@@ -1,0 +1,110 @@
+---
+- hosts: ucd_server
+#  gather_facts: yes
+  become: yes
+  tasks:
+
+  - name: include variables
+    include_vars:
+      file: group_vars/db_server.yml
+      name: dbserver
+
+  - name: create a download directory if not exists
+    become: yes
+    file:
+      path: "{{ download_dir }}"
+      state: directory
+      recurse: yes
+
+  - name: download ucd installation pack
+    become: yes
+    copy:
+      src: "{{ installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      dest: "{{ download_dir }}"
+  
+  - name: unzip ucd installation pack
+    unarchive:
+      src: "{{ download_dir }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ ucds_install_dir_name }}"
+      remote_src: yes
+
+  - name: download jdbc-driver/connector for mariadb/mysql
+    become: yes
+    get_url:
+      url: "https://dev.mysql.com/get/Downloads/Connector-J/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      dest: "{{ download_dir }}"
+
+  - name: unzip jdbc-driver/connector for mariadb/mysql
+    become: yes
+    unarchive:
+      src: "{{ download_dir }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ mysql_connector_install_dir }}"
+      remote_src: yes
+
+  - name: copy jar file to ucd installation directory
+    become: yes
+    copy:
+      src: "{{ download_dir }}/{{ mysql_connector_install_dir }}/{{ mysql_connector_file_name }}.jar"
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/lib/ext/{{ mysql_connector_file_name }}.jar"
+      remote_src: yes
+      force: no
+
+  - name: update ucd installation properties
+    template: src=install.properties.j2 dest="{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+    vars:
+      install_ucd_dir: "{{ install_server_dir }}"
+      install_server_web_host: "{{ ucd_server_hostname }}"
+      dbusername: "{{ dbserver.ucdserver_dbuser }}"
+      dbpassword: "{{ dbserver.ucdserver_upassword }}"
+      dbhostname: "{{ dbserver.mysql_hostname }}"
+      dbname: "{{ dbserver.ucdserver_dbname }}"
+      dbport: "{{ dbserver.mysql_port }}"
+
+  - name: install UCD silently
+    become: yes
+    shell: ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home /usr/lib/jvm/jre
+    register: ucdsinstalllog
+    args:
+      chdir: "{{ download_dir }}/{{ ucds_install_dir_name }}"
+      creates: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_install_log_name }}"
+  - name: create ucdsinstall.log
+    copy:
+      content: "{{  ucdsinstalllog }}"
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_install_log_name }}"
+
+  - name: update ucd service properties
+    become: yes
+    template: 
+        src: "{{ ucds_service_file }}.j2"
+        dest: "/etc/systemd/system/{{ ucds_service_file }}"
+    vars:
+        installation_location: "{{ install_server_dir }}"
+        service_user: "{{ ucd_server_user }}"
+        service_group: "{{ ucd_server_group }}"
+
+  - name: Grant read and execute permissions to service
+    become: yes
+    file:
+        path: "/etc/systemd/system/{{ ucds_service_file }}"
+        mode: '0755'
+
+  - name: Change ownership of UCDS installation direcotry
+    become: yes
+    file: 
+        path: "{{ install_server_dir }}"
+        owner: "{{ ucd_server_user }}"
+        group: "{{ ucd_server_group }}"
+
+  - name: start UCDS service 
+    become: yes
+    service:
+      name: "{{ ucds_service_name }}"
+      enabled: yes
+      state: started
+
+# wait so that service is up and running!
+  - pause:
+      seconds: 60
+      

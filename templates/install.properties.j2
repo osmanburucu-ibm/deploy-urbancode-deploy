@@ -1,0 +1,36 @@
+# Licensed Materials - Property of IBM* and/or HCL**
+# UrbanCode Deploy
+# (c) Copyright IBM Corporation 2011, 2017. All Rights Reserved.
+# (c) Copyright HCL Technologies Ltd. 2018. All Rights Reserved.
+#
+# U.S. Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+# * Trademark of International Business Machines
+# ** Trademark of HCL Technologies Limited
+vendor.name=ibm
+component.name=IBM UrbanCode Deploy
+component.directory=ibm-ucd/server
+version={{ ucd_version }}
+
+nonInteractive=true
+
+install.server.dir={{ install_ucd_dir }}
+install.java.home=/usr/lib/jvm/jre
+install.server.web.always.secure=Y
+install.server.web.host={{ install_server_web_host }}
+install.server.web.https.port={{ install_server_web_https_port }}
+install.server.web.ip=0.0.0.0
+install.server.web.port=8080
+agentcomm.uri=wss\://{{ install_server_web_host }}\:{{ agentcomm_uri_port }}
+database.type=mysql
+hibernate.connection.username={{ dbusername }}
+hibernate.connection.password={{ dbpassword }}
+hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+# need dbserver name parameter
+hibernate.connection.url=jdbc\:mysql\://{{ dbhostname }}\:{{ dbport }}/{{ dbname }}?serverTimezone\=Europe/Vienna
+# hibernate.connection.url=jdbc\:mysql\://{{ inventory_hostname }}\:{{ dbport }}/{{ dbname }}
+# database.derby.port=11377
+# license.server.url=27000@RCLServer.example.com
+
+server.initial.password={{ ucds_initial_admin_pwd }}

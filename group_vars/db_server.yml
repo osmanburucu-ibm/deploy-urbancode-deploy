@@ -1,0 +1,16 @@
+---
+# The variables file used by the playbooks in the dbservers group.
+# These don't have to be explicitly imported by vars_files: they are autopopulated.
+
+mysqlservice: mysqld
+mysql_port: 3306
+
+# TODO: setup mariadb to accept remote access instead from localhost
+mysql_hostname: localhost
+
+# for ucd-server user
+ucdserver_dbuser: ibm_ucd
+ucdserver_dbname: ibm_ucd
+ucdserver_upassword: ibm_ucd
+
+

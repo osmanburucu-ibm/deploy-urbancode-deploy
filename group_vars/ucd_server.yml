@@ -1,0 +1,43 @@
+# mysql / mariadb mysql variables
+mysql_connector_file_name: mysql-connector-java-8.0.19
+mysql_connector_file_extension: zip
+mysql_connector_install_dir: "{{ mysql_connector_file_name }}"
+
+# ucd installation files related 
+# ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack
+ucd_version: 7.0.4.2.1038002
+ucds_file_name: ibm-ucd-{{ ucd_version }}
+ucds_file_extension: zip
+ucds_install_dir_name: ibm-ucd-install
+ucds_install_log_name: ucdsinstall.log
+
+
+# install.properties variables 
+install_server_dir: /opt/ucd/server
+ucd_server_hostname: "{{ inventory_hostname }}"
+ucd_server_user: root
+ucd_server_group: root
+ucds_admin_user: admin
+ucds_initial_admin_pwd: admin
+install_server_web_https_port: 8443
+agentcomm_uri_port: 7919
+
+# UCDS as a service related variables 
+ucds_service_name: IBM_UrbanCode_Deploy_Server
+ucds_service_file: "{{ ucds_service_name }}.service"
+
+# agent installation files related
+ucda_file_name: ucd-agent.zip
+ucda_install_log_name: ucdainstall.log
+#ucd_agent_name: "{{ ucd_server_hostname }}-ucdagent"
+ucd_agent_name: ucd.local
+
+# agent.install.properties variables 
+ucda_install_dir_name: ucd-agent-install
+install_agent_dir: /opt/ucd/agent
+
+# UCD-AGENT as a service related variables 
+ucda_service_name: IBM_UrbanCode_Deploy_Agent
+ucda_service_file: "{{ ucda_service_name }}.service"
+ucd_agent_user: root
+ucd_agent_group: root

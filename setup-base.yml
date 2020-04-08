@@ -1,0 +1,77 @@
+---
+
+- hosts: all
+  become: yes
+  tasks:
+  - include_role:
+      name: robertdebock.buildtools
+  - include_role:
+      name: robertdebock.java
+    vars:
+        java_vendor: "{{ base_java_vendor }}"
+        java_type: "{{ base_java_type }}"
+        java_version: "{{ base_java_version }}"
+    when: base_java_install
+
+  #TODO: need better solution for java home link
+  - name: java symbolic link
+    file:
+      src: /usr/lib/jvm/java-8-openjdk-amd64/jre
+      dest: /usr/lib/jvm/jre
+      state: link
+    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu" 
+
+  - include_role:
+      name: geerlingguy.docker
+    vars:
+        docker_users: "{{ add_user }}"
+        docker_edition: 'ce'
+        docker_package_state: present
+        docker_install_compose: true
+    when: base_docker_install
+
+  - name: set os specific variable of packagename
+    include_vars: 
+      file: "{{ item }}"
+    with_first_found:
+      - 'vars/{{ ansible_distribution }}.yml'
+      - 'vars/{{ ansible_os_family }}.yml'
+
+  - name: verify that prereqs are installed
+    package: 
+        name: "{{ required_os_packages }}"
+        state: present
+        
+- hosts: db_server
+  become: yes
+  pre_tasks:
+  - name: set os specific variable of packagename
+    include_vars: 
+      file: "{{ item }}"
+    with_first_found:
+      - 'vars/{{ ansible_distribution }}.yml'
+      - 'vars/{{ ansible_os_family }}.yml'
+      
+  - name: verify that prereqs are installed
+    package: 
+        name: "{{ required_db_packages }}"
+        state: present
+
+  roles:
+    - role: robertdebock.mysql
+      mysql_databases:
+        - name: "{{ ucdserver_dbname }}"
+          encoding: utf8
+          collation: utf8_bin
+      mysql_users:
+        - name: "{{ ucdserver_dbuser }}"
+          password: "{{ ucdserver_upassword }}" 
+          host: "localhost"
+  post_tasks:
+  - name: add grant to  UCD DB User
+    mysql_user: 
+      name: "{{ ucdserver_dbuser }}" 
+      append_privs: yes
+      priv: "{{ ucdserver_dbname }}.*:ALL,GRANT" 
+      host: "%" 
+      state: present

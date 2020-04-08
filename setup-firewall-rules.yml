@@ -1,0 +1,27 @@
+---
+- hosts: ucd_server
+  become: yes
+  tasks:
+    - name: Firewalld settings
+      firewalld:
+        port: "{{ item.port }}/{{ item.protocol }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      with_items:
+      - { port: "{{ mysql_port }}", protocol: "tcp" }
+      - { port: "{{ install_server_web_https_port }}", protocol: "tcp" }
+      - { port: "{{ agentcomm_uri_port }}", protocol: "tcp" }
+      when: ansible_facts['os_family'] == "RedHat" 
+
+    - name: UFW settings
+      firewalld:
+        port: "{{ item.port }}"
+        proto: "{{ item.protocol }}"
+        rule: allow
+        state: enabled
+      with_items:
+      - { port: "{{ mysql_port }}", protocol: "tcp" }
+      - { port: "{{ install_server_web_https_port }}", protocol: "tcp" }
+      - { port: "{{ agentcomm_uri_port }}", protocol: "tcp" }
+      when: ansible_facts['os_family'] == "Ubuntu" 

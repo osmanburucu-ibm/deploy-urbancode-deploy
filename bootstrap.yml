@@ -1,0 +1,74 @@
+---
+- name: bootstrap all hosts
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - role: robertdebock.bootstrap
+      bootstrap_user: root
+
+# - name: fix setlocale setting
+#   hosts: all
+#   become: yes
+  
+#   roles:
+#     - robertdebock.locale
+
+- hosts: all
+  tasks:
+  - name: Disable SELinux
+    become: yes
+  
+    selinux:
+      state: disabled
+    when: ansible_facts['os_family'] == "RedHat"   
+
+- name: add epel repository
+  hosts: all
+  become: yes
+  
+  roles:
+    - role: geerlingguy.repo-epel
+      when: ansible_facts['os_family'] == "RedHat"   
+
+- name: update all hosts
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  roles:
+    - robertdebock.update
+
+- name: add hostname+ip to /etc/hosts
+  hosts: all
+  become: yes
+#  become_method: sudo
+
+  roles:
+    - holms.fqdn
+    
+# - hosts: ucd_server
+#   gather_facts: yes
+#   become: yes
+#   tasks:
+#   - name: add hostname to /etc/hosts
+#     vars:
+#       comment: '# added by ansible'
+#     lineinfile:
+#       dest: /etc/hosts
+#       regexp: "127[.]0[.]0[.]1.*"
+#       line: "127.0.0.1 localhost.localdomain localhost {{ ansible_hostname }} {{ comment }}"
+#       state: present
+#       backup: yes
+#   - name: add IP address of all hosts to /etc/hosts
+#     vars:
+#       comment: '# added by ansible'
+#     lineinfile:
+#       dest: /etc/hosts
+#       regexp: ".* {{ item }} {{ comment }}"
+#       line: "{{ hostvars[item]['ansible_env'].SSH_CONNECTION.split(' ')[2] }} {{ item }} {{ comment }}"
+#       state: present
+#       backup: yes
+#     when: ansible_hostname != item
+#     loop: "{{ query('inventory_hostnames', 'all') }}"

@@ -1,0 +1,17 @@
+---
+bootstrap_user: root
+ntpserver: at.pool.ntp.org
+all_source_directory: ~/Source/demo_assets
+installfiles_location: "{{ all_source_directory }}/UCD" 
+add_user: ["lnxadm", "ucd"]
+
+
+download_dir: /tmp/downloads
+
+# Base install control 
+base_docker_install: no
+
+base_java_install: yes
+base_java_vendor: openjdk
+base_java_type: jre
+base_java_version: 8
