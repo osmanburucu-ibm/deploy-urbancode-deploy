@@ -6,7 +6,7 @@ I wanted to learn ANSIBLE. And i learn best when i do something practical. So th
 
 Started beginning of November 2019 with reading (Jeff Geerling: Ansible for DevOps, Lorin Hochstein & Rene Moser: Ansible Up and Running 2nd Ed) and hacking.
 
-A lot of the used code has been found during my search on Ansible documentation, Ansible Galaxy, Stackoverflow, and so on. Didn't record the source to mentioned all of them here! My mistake...
+A lot of the used code has been found during my search on Ansible documentation, Ansible Galaxy, Stackoverflow, and so on. Didn't record the source to mention all of them here! My mistake...
 
 Which environment i used:
 Visual Studo Code with Ansible, Better Jinja, Jinja, Todo Tree Plugins
@@ -20,7 +20,7 @@ UBUNTU 18.04
 What is happening?
 The freshly setup server is bootstraped so that Ansible can work (using Ansible to bootstrap it ;))
 Server is updated, EPEL Repository is set for CENTOS/RHEL
-Java, Docker and MySQL/MariaDB is installed
+Java, Docker (optional) and MySQL/MariaDB is installed
 UCD database and user is created
 UCD Server and Agent is installed and Agent is set as artifact import agent
 
@@ -77,9 +77,9 @@ IBM Austria, Vienna
         2. UCD Server Database variables
             1. database name (default: ibm_ucd)
             2. database user and password (default: ibm_ucd/ibm_ucd)
-5. Setup SSH connection [***TODO***](#5) Need to have a more flexible, stable and easier solution for that (also need different users!)
+5. Setup SSH connection to your target server
     1. Need to have key exchange with hosts so that during ansible playbook execution no password is queried
-    2. run [script](helper_scripts/addtoknownhosts.sh) to accept remote host keys to known hosts and copy local users key to remote host
+    2. You can use this project to run [scripts](https://github.com/osmanburucu-ibm/helper_scripts) to accept remote host keys to known hosts and copy local users key to remote host
         1. password from remote host (user: root) will be asked here
 6. Run setup-all-ucdsa.yml playbook which will execute all other playbooks in the right order
 
