@@ -25,114 +25,57 @@ UCD database and user is created
 UCD Server and Agent is installed and Agent is set as artifact import agent
 
 Who am I:
+
+~~~
 Ing. Osman Burucu
 DevOps Enthusiast
 email: osman.burucu@at.ibm.com
 IBM Austria, Vienna
+~~~
 
 ## Steps
 
-1. Put all installation material into one directory locally (which will be used for the installfiles_location variable!)
-    1. [***TODO***](#1.1) Need a more flexible way to access installation files (f.e. artifactory, web url, ftp site, ....)
-2. Install all playbook requirements
-    1. ansible-galaxy install -r requirements.yml
-3. Then set hosts
-    1. [***TODO***](#3.1): at the moment ucd_server and db_server has to be the same as connection to mariadb works only over localhost
-    2. [***TODO***](#3.2): BluePrint Engine/Designer etc. are not used at the moment
-    3. set the FQDN and the IP address of the servers
-4. Set your Variables
-    1. [group_vars/all.yml](group_vars/all.yml)
-        1. installfiles_location = the LOCAL directory where all the installation files (zipped) are to be found
-        2. download_dir = the REMOTE location where the "downladed" files to be stored
-    2. [group_vars/ucd_server.yml](group_vars/ucd_server.yml)
-        1. mysql/mariadb variables
-            1. only the provided mysql connector worked
-            2. [mysql-connector](https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-8.0.19.zip)
-        2. UCD Server variables
-            1. need the file name of UCD server zip file (got this one from fix-central! ibm-ucd-7.0.4.1.1036185.zip)
-            2. ucds_install_dir_name: is the name of the directory after unzipping the provided file from above
-            3. ucds_install_log_name: will be created during installation and will show stdout and stderr!
-                1. installation will skip when this file exists!
-        3. UCD Server install.properties variables
-            1. are used to populate the installation.properties file for silent install!
-            2. set target directory (standard is /opt/ucd/server)
-            3. set the FQDN of the server name (--> see hosts file as this will be used! and not the actual hostname from server!)
-            4. which user/group is used to run the UCD-server process (at the moment root!!)
-                1. [***TODO***](#4.2.3.4.1): change UCD process user/group to different user instead of root
-            5. ucds_admin_user and ucds_initial_admin_pwd: initial UCD Server admin user and password
-            6. install_server_web_https_port: which port to use for HTTPS (default is 8443)
-            7. agentcomm_uri_port: which port to use for UCD Server - Agent communication (default is 7919)
-        4. UCD Agent variables
-            1. ucda_file_name: name of the zip file which will be downloaded from UCD Server
-            2. ucda_install_log_name: log file which will be used during silent installation.
-                1. installation will skip when this file exists!
-            3. ucd_agent_name: uniqe agent name (use again inventory_hostname with -ucdagent as addon)
-        5. UCD Agent agent.install.properties variables
-            1. ucda_install_dir_name: name of the directory after unzipping the downloaded ucd-agent.zip from server
-            2. install_agent_dir: set target directory (standard is /opt/ucd/agent)
-    3. [group_vars/db_server](group_vars/db_server)
-        1. mariadb/mysql variables
-            1. define the mysql/mariadb service and port to use (default are mysqld and 3306)
-            2. set the hostname of the mysql/mariadb server (default localhost -> [***TODO***](#4.3.1.2): due some remote access problems it has to be localhost...)
-        2. UCD Server Database variables
-            1. database name (default: ibm_ucd)
-            2. database user and password (default: ibm_ucd/ibm_ucd)
-5. Setup SSH connection to your target server
-    1. Need to have key exchange with hosts so that during ansible playbook execution no password is queried
-    2. You can use this project to run [scripts](https://github.com/osmanburucu-ibm/helper_scripts) to accept remote host keys to known hosts and copy local users key to remote host
-        1. password from remote host  will be asked here
-6. Run setup-all-ucdsa.yml playbook which will execute all other playbooks in the right order
+* create a local directory for all artifacts
+  * example: 
+    * ~/Source/demo_assets as base directory for all 
+    * ~/Source/demo_assets/UCD with binaries of installation files
+    * ~/Source/demo_assets/repos
+* clone repos into repos directory
 
-    ~~~sh
-    ansible-playbook setup-all-ucsa.yml -u <remote user>
-    ~~~
+  ~~~sh
+  cd repos
+  git clone https://github.com/osmanburucu-ibm/deploy-urbancode-deploy.git
+  ~~~
+  
+* install requirements for modules
 
----
+  ~~~sh
+  cd deploy-urbancode-deploy
+  ansible-galaxy install -r requirements.yml
+  ~~~
 
-## Todo's
+* edit the hosts file and set the target servername and ip address
+* Set your Variables if the provided defaults do not fit
+  * group_vars/all.yml
+    * ***installfiles_location*** is set with default to ***~/Source/demo_assets/UCD***
+    * ***download_dir*** is the directory on the target server where the artifacts will be downloaded. It is set to ***/tmp/downloads***
+    * ***base_docker_install*** if set to ***yes*** Docker will be installed
+    * ***base_java_xxx*** is used to install java with given versions.
+  * group_vars/ucd_server.yml
+    * ***mysql_connector_xxx*** which mysql connector to use
+    * ***ucd installation files related variables*** 
+      * ***ucd_version*** which UCD version will be installed. You can get the latest versions from your PA site or from IBM Fixcentral
+    * ***install.properties related***
+      * set the variables for the silent installation of UCD like, target installation directory, admin user/pwd, ucd server hostname, which ports to use and so on.
+    * ***agent installation files related variables***
+      * ***ucd_agent_name***: set the name of the agent, default is ucd.local
+  * group_vars/db_server.yml
+    * set the database related variables
+* Start the setup with
 
-### OPEN Todo's
+  ~~~sh
+  ansible-playbook setup-all-ucdsa.yml -u <ansible user for installation>
+  ~~~
 
-***Todo's overall***
-
-#### Security
-
-TODO: on RHEL/CENTOS use SELINUX enabled (at the moment it has to be disabled)
-TODO: provide ways to create users with pwd on remote host(s) - f.e. needed for non root execution of playbook...
-
-#### provisioning of servers
-
-TODO: need provisioning of resources
-TODO: TerraForm for IBM Cloud
-TODO: ?? TerraForm or other for VMWare
-TODO: TerraForm or Vagrant for VirtualBox
-
-#### UrbanCode BluePrint Designer
-
-TODO: UCD BPD (Engine, Designer and so on) need also to be setup
-
-#### Demo Artifacts
-
-TODO: provide demo artefacts (f.e. JPetStore application) in UCD
-
-***Todo's described in the steps section***
-
-#### 1.1
-
-TODO: Need a more flexible way to access installation files (f.e. artifactory, web url, ftp site, ....)
-
-#### 3.1
-
-TODO: at the moment ucd_server and db_server has to be the same as connection to mariadb works only over localhost
-
-#### 3.2
-
-TODO: BluePrint Engine/Designer etc. are not used at the moment
-
-#### 4.2.3.4.1
-
-TODO: change UCD process user/group to different user instead of root
-
-#### 4.3.1.2
-
-TODO: due some settings problems (do not know enough to configure this correctly, have to learn about it) it has to be localhost...
+  * this will use the hosts file (see ansible.cfg)
+  * after a few minutes your UrbanCode server will be finished

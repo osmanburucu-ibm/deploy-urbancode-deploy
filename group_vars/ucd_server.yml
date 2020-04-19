@@ -52,7 +52,7 @@ ucd_agent_user: root
 ucd_agent_group: root
 
 
-# prep for rewrite
+# prep for rewrite will not be used at the moment...
 
 ucd_server:
     install_dir: /opt/ucd/server
@@ -63,13 +63,13 @@ ucd_server:
     https_port: 8443
     agentcom_port: 7919
     service_name: IBM_UrbanCode_Deploy_Server
-    service_file: "{{ ucds_service_name }}.service"
+    service_file: "{{ ucd_server.service_name }}.service"
     service_user: root
     service_group: root
     mysql: 
         connector_file_name: mysql-connector-java-8.0.19
         connector_file_extension: zip
-        connector_install_dir: "{{ mysql_connector_file_name }}"
+        connector_install_dir: "{{ ucd_server.mysql.connector_file_name }}"
     install_vars: 
     # ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack
         version: 7.0.4.2.1038002
