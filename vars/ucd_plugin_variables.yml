@@ -1,0 +1,28 @@
+---
+# plugin related parameters
+# plugin_type: is used for the directory name of the staging directory when copying
+# command / source 
+# plugin_type2: is used when importing with curl
+# automationPlugin / sourceConfigPlugin 
+ucd_plugins:
+    dbupgrader:
+        name: DBUpgrader
+        version: 3.869017
+        extension: zip
+        plugin_type: command
+        plugin_type2: automationPlugin
+    tomcat:
+        name: Tomcat
+        version: 7.868953
+        extension: zip
+        plugin_type: command
+        plugin_type2: automationPlugin
+
+# example download info  
+#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.869017.zip
+ucd_plugins_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd
+ucd_plugins_download_directory: plugins
+
+# location of staging directory when copying plugins into the server 
+ucd_server_plugins_dirctory: "{{ ucd_server_install_dir }}/appdata/var/plugins"
+

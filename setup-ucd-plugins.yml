@@ -1,0 +1,38 @@
+---
+- hosts: ucd_server
+#  gather_facts: yes
+  become: yes
+  tasks:
+
+  - name: Include plugin related vars
+    include_vars:
+      file: vars/ucd_plugin_variables.yml
+
+# download plugins 
+  - name: create a plugin download directory if not exists
+    file:
+      path: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
+      state: directory
+      recurse: yes
+
+  - name: download ucd plugins
+    get_url: 
+        url: "{{ ucd_plugins_download_url }}/{{ item.value.name }}/{{ item.value.name }}-{{ item.value.version }}.{{ item.value.extension }}"
+        dest: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
+    loop: "{{ lookup('dict', ucd_plugins) }}"
+
+  - name: import plugins into ucd server
+    shell: 'curl -v -k -u  "{{ ucds_admin_user }}:{{ ucds_initial_admin_pwd }}" -X POST -H "Content-Type: multipart/form-data" -F "file=@{{ item.value.name }}-{{ item.value.version }}.{{ item.value.extension }}" "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/rest/plugin/{{ item.value.plugin_type2 }}"'
+    args:  
+      chdir: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
+    loop: "{{ lookup('dict', ucd_plugins) }}"
+
+# alternative for importing plugins, just copy plugins into staging dir then restart ucd server 
+#   - name: copy plugins to staging directory of UCD server
+#     copy:
+#       src: "{{ download_dir }}/{{ ucd_plugins_download_directory }}/{{ item.value.name }}/{{ item.value.name }}-{{ item.value.version }}.{{ item.value.extension }}"
+#       dest: "{{ ucd_server_plugins_dirctory }}/{{ item.value.plugin_type }}/staging"
+#     loop: "{{ lookup('dict', ucd_plugins) }}"
+
+# # restart UCD server 
+#   - name: restart UCD server to install plugins

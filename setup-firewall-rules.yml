@@ -2,6 +2,14 @@
 - hosts: ucd_server
   become: yes
   tasks:
+    - name: include variables from group_vars
+      include_vars:
+        dir: group_vars
+
+    - name: include variables from vars
+      include_vars:
+        dir: vars
+
     - name: Firewalld settings
       firewalld:
         port: "{{ item.port }}/{{ item.protocol }}"

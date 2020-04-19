@@ -14,13 +14,21 @@ ucds_install_log_name: ucdsinstall.log
 
 # install.properties variables 
 install_server_dir: /opt/ucd/server
+ucd_server_install_dir: /opt/ucd/server
+
 ucd_server_hostname: "{{ inventory_hostname }}"
+ucd_server_hostname_short: "{{ inventory_hostname_short }}"
 ucd_server_user: root
 ucd_server_group: root
+
 ucds_admin_user: admin
 ucds_initial_admin_pwd: admin
+
 install_server_web_https_port: 8443
+ucd_server_https_port: 8443
+
 agentcomm_uri_port: 7919
+ucd_server_agentcom_port: 7919
 
 # UCDS as a service related variables 
 ucds_service_name: IBM_UrbanCode_Deploy_Server
@@ -29,15 +37,63 @@ ucds_service_file: "{{ ucds_service_name }}.service"
 # agent installation files related
 ucda_file_name: ucd-agent.zip
 ucda_install_log_name: ucdainstall.log
-#ucd_agent_name: "{{ ucd_server_hostname }}-ucdagent"
+#ucd_agent_name: "{{ ucd_server_hostname_short }}-ucdagent"
 ucd_agent_name: ucd.local
 
 # agent.install.properties variables 
 ucda_install_dir_name: ucd-agent-install
 install_agent_dir: /opt/ucd/agent
+ucd_agent_install_dir: /opt/ucd/agent
 
 # UCD-AGENT as a service related variables 
 ucda_service_name: IBM_UrbanCode_Deploy_Agent
 ucda_service_file: "{{ ucda_service_name }}.service"
 ucd_agent_user: root
 ucd_agent_group: root
+
+
+# prep for rewrite
+
+ucd_server:
+    install_dir: /opt/ucd/server
+    hostname: "{{ inventory_hostname }}"
+    hostname_short: "{{ inventory_hostname_short }}"
+    admin_user: admin
+    admin_pwd: admin
+    https_port: 8443
+    agentcom_port: 7919
+    service_name: IBM_UrbanCode_Deploy_Server
+    service_file: "{{ ucds_service_name }}.service"
+    service_user: root
+    service_group: root
+    mysql: 
+        connector_file_name: mysql-connector-java-8.0.19
+        connector_file_extension: zip
+        connector_install_dir: "{{ mysql_connector_file_name }}"
+    install_vars: 
+    # ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack
+        version: 7.0.4.2.1038002
+        file_name: ibm-ucd-{{ ucd_version }}
+        dir: ibm-ucd-install
+        file_extension: zip
+        log_name: ucdsinstall.log
+
+
+ucd_agent:
+    install_dir: /opt/ucd/agent
+#    name: "{{ ucd_server_hostname_short }}-ucdagent"
+    name: ucd.local
+    service_name: IBM_UrbanCode_Deploy_Agent
+    service_file: "{{ ucda_service_name }}.service"
+    service_user: root
+    service_group: root    
+    # agent installation files related
+    install_vars:
+        # agent.install.properties variables 
+        dir: ucd-agent-install
+        file_name: ucd-agent.zip
+        log_name: ucdainstall.log
+    #ucd_agent_name: "{{ ucd_server_hostname_short }}-ucdagent"
+    agent_name: ucd.local
+
+   

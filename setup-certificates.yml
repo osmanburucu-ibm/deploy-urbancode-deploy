@@ -1,0 +1,39 @@
+---
+
+- hosts: ucd_server
+  become: yes
+  tasks:
+  - name: install pip
+    package:
+      name: pip
+      state: present
+  - name: install cryptography
+    pip:
+      name: cryptography 
+    
+  - name: Ensure directory exists for local self-signed TLS certs.
+    file:
+        path: /etc/letsencrypt/live/{{ ucd_server_hostname }}
+        state: directory
+
+  - name: Ensure directory exists /etc/ssl.....
+    file:
+        path: /etc/ssl/private
+        state: directory
+
+  - name: Generate an OpenSSL private key.
+    openssl_privatekey:
+        path: /etc/letsencrypt/live/{{ ucd_server_hostname }}/privkey.pem
+
+  - name: Generate an OpenSSL CSR.
+    openssl_csr:
+        path: /etc/ssl/private/{{ ucd_server_hostname }}.csr
+        privatekey_path: /etc/letsencrypt/live/{{ ucd_server_hostname }}/privkey.pem
+        common_name: "{{ ucd_server_hostname }}"
+
+  - name: Generate a Self Signed OpenSSL certificate.
+    openssl_certificate:
+        path: /etc/letsencrypt/live/{{ ucd_server_hostname }}/fullchain.pem
+        privatekey_path: /etc/letsencrypt/live/{{ ucd_server_hostname }}/privkey.pem
+        csr_path: /etc/ssl/private/{{ ucd_server_hostname }}.csr
+        provider: selfsigned

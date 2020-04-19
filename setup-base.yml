@@ -67,6 +67,7 @@
         - name: "{{ ucdserver_dbuser }}"
           password: "{{ ucdserver_upassword }}" 
           host: "localhost"
+          
   post_tasks:
   - name: add grant to  UCD DB User
     mysql_user: 

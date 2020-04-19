@@ -4,4 +4,5 @@
     - import_playbook: setup-firewall-rules.yml
     - import_playbook: setup-ucd-server.yml
     - import_playbook: setup-ucd-agent.yml
+    - import_playbook: setup-ucd-plugins.yml
     
