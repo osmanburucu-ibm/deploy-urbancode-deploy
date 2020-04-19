@@ -80,14 +80,12 @@ IBM Austria, Vienna
 5. Setup SSH connection to your target server
     1. Need to have key exchange with hosts so that during ansible playbook execution no password is queried
     2. You can use this project to run [scripts](https://github.com/osmanburucu-ibm/helper_scripts) to accept remote host keys to known hosts and copy local users key to remote host
-        1. password from remote host (user: root) will be asked here
+        1. password from remote host  will be asked here
 6. Run setup-all-ucdsa.yml playbook which will execute all other playbooks in the right order
 
     ~~~sh
-    ansible-playbook setup-all-ucsa.yml -u root
+    ansible-playbook setup-all-ucsa.yml -u <remote user>
     ~~~
-
-    [***TODO***](#6) playbook has to be started with root user when local user is not setup as user on remote host (need sudo and sudo with no passwd settings)
 
 ---
 
@@ -137,12 +135,4 @@ TODO: change UCD process user/group to different user instead of root
 
 #### 4.3.1.2
 
-TODO: due some remote access problems it has to be localhost...
-
-#### 5
-
-TODO: Need to have a more flexible, stable and easier solution for that (also need different users!)
-
-#### 6
-
-TODO: playbook has to be started with root user when local user is not setup as user on remote host (need sudo and sudo with no passwd settings)
+TODO: due some settings problems (do not know enough to configure this correctly, have to learn about it) it has to be localhost...
