@@ -6,6 +6,6 @@
 - src: robertdebock.environment
 - src: robertdebock.buildtools
 - src: robertdebock.java
-- src: robertdebock.mysql
+- src: geerlingguy.mysql
 - src: geerlingguy.docker
 - src: holms.fqdn

@@ -16,7 +16,7 @@
   #TODO: need better solution for java home link
   - name: java symbolic link
     file:
-      src: /usr/lib/jvm/java-8-openjdk-amd64/jre
+      src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64/jre"
       dest: /usr/lib/jvm/jre
       state: link
     when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu" 
@@ -52,13 +52,13 @@
       - 'vars/{{ ansible_distribution }}.yml'
       - 'vars/{{ ansible_os_family }}.yml'
       
-  - name: verify that prereqs are installed
-    package: 
-        name: "{{ required_db_packages }}"
-        state: present
+  # - name: verify that prereqs are installed
+  #   package: 
+  #       name: "{{ required_db_packages }}"
+  #       state: present
 
   roles:
-    - role: robertdebock.mysql
+    - role: geerlingguy.mysql
       mysql_databases:
         - name: "{{ ucdserver_dbname }}"
           encoding: utf8

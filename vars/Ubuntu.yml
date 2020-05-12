@@ -1,7 +1,7 @@
 ---
 required_db_packages: 
-    - mariadb-server
-    - python-pymysql
+    # - mariadb-server
+    # - python-pymysql
 
 required_os_packages:
     - lsb-core

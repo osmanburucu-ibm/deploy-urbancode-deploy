@@ -1,0 +1,31 @@
+---
+# rlks  installation files related 
+rlks_installfiles_location: ~/Source/demo_assets/RLKS
+
+rlks_version: 816_Linux_x86_64
+rlks_file_name: IBM_Rational_License_Key_Server_{{ rlks_version }}
+rlks_file_extension: zip
+
+# rlks license file name
+rlks_source_license_file_name: license_2020.03.06.dat
+rlks_target_directory: "/opt/IBM/RationalRLKS"
+rlks_target_license_directory: config
+rlks_target_license_file_name: server_license.lic
+
+# rlks unpacked files and directories 
+rlks_source_dir: RLKSSERVER_SETUP_LINUX
+rlks_source_diskdir: disk1
+rlks_source_instimage_dir: InstallerImage_linux_gtk_x86_64
+rlks_source_instimage_tools_dir: tools
+
+# rlks silent install related
+rlks_install_log_name: rlks_install.log
+rlks_responsefile_name: responsefile.xml
+
+# Installation Manager related vars
+im_shared_directory: "/opt/IBM/IBMIMShared"
+rlks_install_version: 8.1.6000.20190325_0127
+
+# RLKS as a service related variables 
+rlks_service_name: IBM_Rational_License_Key_Server
+rlks_service_file: "{{ rlks_service_name }}.service"

@@ -1,0 +1,71 @@
+---
+# Demo related variables 
+demo_name: JPetStore
+demo_artifact_binaries: artifact_binaries_JPetStore.zip
+demo_source_directory: "{{ all_source_directory }}/demos"
+demo_target_directory: /home
+
+# # names of the target environments, are duplicated for tomcat again see below
+# demo_target_environments:
+#     - sit
+#     - uat
+
+demo_components:
+    - JPetStore-APP
+    - JPetStore-DB
+    - JPetStore-WEB
+
+# 
+demo_target_environment_vars:
+    sit:
+        non_ssl_port: 8085
+        ssl_port: 8445            
+    uat:
+        non_ssl_port: 8086
+        ssl_port: 8446
+
+
+# for JpetStore demo
+jpetstore_dbuser: jpetstore
+jpetstore_dbname: jpetstore
+jpetstore_upassword: jppwd
+
+jpetstore_db:
+    name: jpetstore
+    user: jpetstore
+    password: jppwd
+
+
+# apache tomcat 
+# https://archive.apache.org/dist/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.tar.gz
+at_major_version: 7
+at_middle_version: 0
+at_minor_version: 42
+at_file_version: -{{ at_major_version }}.{{ at_middle_version }}.{{ at_minor_version }}
+at_file_name: apache-tomcat{{ at_file_version }}
+at_file_extension: tar.gz
+at_url_version: v{{ at_major_version }}.{{ at_middle_version }}.{{ at_minor_version }}
+
+at_download_url_part: dist/tomcat/tomcat-{{ at_major_version }}
+at_download_url: https://archive.apache.org/{{ at_download_url_part }}/{{ at_url_version }}/bin/{{ at_file_name }}.{{ at_file_extension }}
+at_target_directory: /opt/webservers/
+at_tomcat_users_file: tomcat-users.xml
+
+at_standard_ports:
+    non_ssl_port: 8080
+    ssl_port: 8443
+
+# at_target_environment_ports:
+#     sit:
+#         non_ssl_port: 8085
+#         ssl_port: 8445
+#     uat:
+#         non_ssl_port: 8086
+#         ssl_port: 8446
+
+# # UrbanCode Plugins related variables 
+# ucd_plugin_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins
+# ucd_plugin_dbupgrader_name: DBUpgrader
+# ucd_plugin_dbupgrader_version: 3.869017
+
+# #http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.869017.zip

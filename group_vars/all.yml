@@ -11,7 +11,7 @@ add_user: ["lnxadm", "ucd"]
 
 
 # Base install control 
-base_docker_install: no
+base_docker_install: yes 
 
 base_java_install: yes
 base_java_vendor: openjdk

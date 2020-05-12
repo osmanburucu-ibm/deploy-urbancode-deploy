@@ -38,8 +38,7 @@
   gather_facts: yes
 
   roles:
-    - role: robertdebock.update
-      update_reboot: yes
+    - robertdebock.update
 
 - name: add hostname+ip to /etc/hosts
   hosts: all
