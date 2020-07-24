@@ -79,3 +79,9 @@ IBM Austria, Vienna
 
   * this will use the hosts file (see ansible.cfg)
   * after a few minutes your UrbanCode server will be finished
+
+* installing other agents on different machines:
+
+~~~sh
+ansible-playbook -i hosts -u root setup-ucd-agents.yml -e 'ucd_server_hostname=<name of the ucd server>'
+~~~

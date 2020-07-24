@@ -1,0 +1,82 @@
+---
+- hosts: ucd_agent
+  gather_facts: yes
+  become: yes
+  tasks:
+
+  - name: include variables
+    include_vars:
+      file: group_vars/ucd_server.yml
+
+  - name: create a download directory if not exists
+    become: yes
+    file:
+      path: "{{ download_dir }}"
+      state: directory
+      recurse: yes
+
+  - name: wait
+    wait_for:
+      host: "{{ ucd_server_hostname }}"
+      port: "{{ install_server_web_https_port }}"
+      timeout: 30
+  - debug: msg=OK
+
+  - name: download ucd-agent from server
+    become: yes
+    get_url:
+      url: "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/tools/{{ ucda_file_name }}"
+      dest: "{{ download_dir }}"
+      validate_certs: no
+
+  - name: unzip ucd-agent
+    become: yes
+    unarchive:
+      src: "{{ download_dir }}/{{ ucda_file_name }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ ucda_install_dir_name }}"
+      remote_src: yes
+
+  - name: update ucd-agent installation properties
+    template: src=agent.install.properties.j2 dest="{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+    vars:
+      install_agent_home: "{{ install_agent_dir }}"
+      ucda_name: "{{ inventory_hostname_short }}"
+
+  - name: install AGENT silently
+    become: yes
+    shell: ./install-agent-from-file.sh install.properties &> "{{ ucda_install_log_name }}"
+    args:
+      chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
+      creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+
+  - name: update AGENT service properties
+    become: yes
+    template:
+        src: "{{ ucda_service_file }}.j2"
+        dest: "/etc/systemd/system/{{ ucda_service_file }}"
+    vars:
+        installation_location: "{{ install_agent_dir }}"
+        service_user: "{{ ucd_agent_user }}"
+        service_group: "{{ ucd_agent_group }}"
+
+  - name: Grant read and execute permissions to AGENT service
+    become: yes
+    file:
+        path: "/etc/systemd/system/{{ ucda_service_file }}"
+        mode: '0755'
+
+  - name: Change ownership of AGENT installation directory
+    become: yes
+    file:
+        path: "{{ install_agent_dir }}"
+        owner: "{{ ucd_agent_user }}"
+        group: "{{ ucd_agent_group }}"
+
+  - name: start AGENT service
+    become: yes
+    service:
+      name: "{{ ucda_service_name }}"
+      enabled: yes
+      state: started
+  

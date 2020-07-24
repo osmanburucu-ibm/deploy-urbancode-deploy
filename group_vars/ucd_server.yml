@@ -5,13 +5,14 @@ mysql_connector_install_dir: "{{ mysql_connector_file_name }}"
 
 # ucd installation files related 
 # ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack
-# ucd_version: 7.0.4.2.1038002
-ucd_version: 7.0.5.2.1050384
+#ucd_version: 7.0.4.2.1038002
+# ucd_version: 7.0.5.2.1050384
+ucd_version: 7.1.0.0.1058690
 ucds_file_name: ibm-ucd-{{ ucd_version }}
 ucds_file_extension: zip
 ucds_install_dir_name: ibm-ucd-install
 ucds_install_log_name: ucdsinstall.log
-
+ucds_upgrade_log_name: ucdsupgrade.log
 
 # install.properties variables 
 install_server_dir: /opt/ucd/server

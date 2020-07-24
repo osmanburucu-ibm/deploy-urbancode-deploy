@@ -7,19 +7,20 @@
 ucd_plugins:
     dbupgrader:
         name: DBUpgrader
-        version: 3.869017
+        version: 3.1056567
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin
     tomcat:
         name: Tomcat
-        version: 7.868953
+        version: 7.1056532
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin
 
 # example download info  
-#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.869017.zip
+#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/Tomcat/Tomcat-7.1056532.zip
+#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.1056567.zip
 ucd_plugins_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd
 ucd_plugins_download_directory: plugins
 
