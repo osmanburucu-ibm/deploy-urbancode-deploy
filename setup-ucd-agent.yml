@@ -10,7 +10,7 @@
       path: "{{ download_dir }}"
       state: directory
       recurse: yes
-      
+
   - name: wait
     wait_for:
       host: "{{ ucd_server_hostname }}"
@@ -25,7 +25,7 @@
       dest: "{{ download_dir }}"
       validate_certs: no
 
-  - name: unzip ucd-agent 
+  - name: unzip ucd-agent
     become: yes
     unarchive:
       src: "{{ download_dir }}/{{ ucda_file_name }}"
@@ -45,10 +45,10 @@
     args:
       chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
-  
+
   - name: update AGENT service properties
     become: yes
-    template: 
+    template:
         src: "{{ ucda_service_file }}.j2"
         dest: "/etc/systemd/system/{{ ucda_service_file }}"
     vars:
@@ -64,12 +64,12 @@
 
   - name: Change ownership of AGENT installation direcotry
     become: yes
-    file: 
+    file:
         path: "{{ install_agent_dir }}"
         owner: "{{ ucd_agent_user }}"
         group: "{{ ucd_agent_group }}"
 
-  - name: start AGENT service 
+  - name: start AGENT service
     become: yes
     service:
       name: "{{ ucda_service_name }}"
@@ -81,8 +81,8 @@
       seconds: 30
 
   - name: populate service facts
-    service_facts:   
-    register: servicestatus 
+    service_facts:
+    register: servicestatus
 
   - debug:
       var: ansible_facts.services["{{ ucda_service_file }}"]

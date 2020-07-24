@@ -21,7 +21,7 @@
     copy:
       src: "{{ installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
-  
+
   - name: unzip ucd installation pack
     unarchive:
       src: "{{ download_dir }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
@@ -76,7 +76,7 @@
 
   - name: update ucd service properties
     become: yes
-    template: 
+    template:
         src: "{{ ucds_service_file }}.j2"
         dest: "/etc/systemd/system/{{ ucds_service_file }}"
     vars:
@@ -92,12 +92,12 @@
 
   - name: Change ownership of UCDS installation direcotry
     become: yes
-    file: 
+    file:
         path: "{{ install_server_dir }}"
         owner: "{{ ucd_server_user }}"
         group: "{{ ucd_server_group }}"
 
-  - name: start UCDS service 
+  - name: start UCDS service
     become: yes
     service:
       name: "{{ ucds_service_name }}"
@@ -107,4 +107,3 @@
 # wait so that service is up and running!
   - pause:
       seconds: 60
-      

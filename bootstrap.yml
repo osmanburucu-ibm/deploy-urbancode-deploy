@@ -11,7 +11,7 @@
 # - name: fix setlocale setting
 #   hosts: all
 #   become: yes
-  
+
 #   roles:
 #     - robertdebock.locale
 
@@ -19,18 +19,18 @@
   tasks:
   - name: Disable SELinux
     become: yes
-  
+
     selinux:
       state: disabled
-    when: ansible_facts['os_family'] == "RedHat"   
+    when: ansible_facts['os_family'] == "RedHat"
 
 - name: add epel repository
   hosts: all
   become: yes
-  
+
   roles:
     - role: geerlingguy.repo-epel
-      when: ansible_facts['os_family'] == "RedHat"   
+      when: ansible_facts['os_family'] == "RedHat"
 
 - name: update all hosts
   hosts: all

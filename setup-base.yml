@@ -19,7 +19,7 @@
       src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64/jre"
       dest: /usr/lib/jvm/jre
       state: link
-    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu" 
+    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
 
   - include_role:
       name: geerlingguy.docker
@@ -31,27 +31,27 @@
     when: base_docker_install
 
   - name: set os specific variable of packagename
-    include_vars: 
+    include_vars:
       file: "{{ item }}"
     with_first_found:
       - 'vars/{{ ansible_distribution }}.yml'
       - 'vars/{{ ansible_os_family }}.yml'
 
   - name: verify that prereqs are installed
-    package: 
+    package:
         name: "{{ required_os_packages }}"
         state: present
-        
+
 - hosts: db_server
   become: yes
   pre_tasks:
   - name: set os specific variable of packagename
-    include_vars: 
+    include_vars:
       file: "{{ item }}"
     with_first_found:
       - 'vars/{{ ansible_distribution }}.yml'
       - 'vars/{{ ansible_os_family }}.yml'
-      
+
   # - name: verify that prereqs are installed
   #   package: 
   #       name: "{{ required_db_packages }}"
@@ -65,14 +65,14 @@
           collation: utf8_bin
       mysql_users:
         - name: "{{ ucdserver_dbuser }}"
-          password: "{{ ucdserver_upassword }}" 
+          password: "{{ ucdserver_upassword }}"
           host: "localhost"
-          
+
   post_tasks:
   - name: add grant to  UCD DB User
-    mysql_user: 
-      name: "{{ ucdserver_dbuser }}" 
+    mysql_user:
+      name: "{{ ucdserver_dbuser }}"
       append_privs: yes
-      priv: "{{ ucdserver_dbname }}.*:ALL,GRANT" 
-      host: "%" 
+      priv: "{{ ucdserver_dbname }}.*:ALL,GRANT"
+      host: "%"
       state: present
