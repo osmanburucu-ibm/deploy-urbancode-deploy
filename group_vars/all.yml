@@ -2,6 +2,7 @@
 bootstrap_user: root
 ntpserver: at.pool.ntp.org
 
+ansible_ssh_private_key_file: ~/.ssh/ansible-control-host
 all_source_directory: ~/Source/demo_assets
 installfiles_location: "{{ all_source_directory }}/UCD" 
 download_dir: /tmp/downloads

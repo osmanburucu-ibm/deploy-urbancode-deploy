@@ -21,7 +21,9 @@ ucd_plugins:
 # example download info  
 #http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/Tomcat/Tomcat-7.1056532.zip
 #http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.1056567.zip
-ucd_plugins_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd
+#new location for plugins is now https://www.urbancode.com/uc-downloads/plugins/
+# ucd_plugins_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd
+ucd_plugins_download_url: https://www.urbancode.com/uc-downloads/plugins/ibmucd
 ucd_plugins_download_directory: plugins
 
 # location of staging directory when copying plugins into the server 
