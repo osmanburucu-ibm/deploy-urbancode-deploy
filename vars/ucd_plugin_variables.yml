@@ -27,5 +27,5 @@ ucd_plugins_download_url: https://www.urbancode.com/uc-downloads/plugins/ibmucd
 ucd_plugins_download_directory: plugins
 
 # location of staging directory when copying plugins into the server 
-ucd_server_plugins_dirctory: "{{ ucd_server_install_dir }}/appdata/var/plugins"
+ucd_server_plugins_dirctory: "{{ install_server_dir }}/appdata/var/plugins"
 

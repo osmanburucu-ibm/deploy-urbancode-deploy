@@ -45,10 +45,15 @@
 
   - name: install AGENT silently
     become: yes
-    shell: ./install-agent-from-file.sh install.properties &> "{{ ucda_install_log_name }}"
+    shell: ./install-agent-from-file.sh install.properties
+    register: ucdainstalllog
     args:
       chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+  - name: create ucdainstall.log
+    copy:
+      content: "{{  ucdainstalllog }}"
+      dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
 
   - name: update AGENT service properties
     become: yes

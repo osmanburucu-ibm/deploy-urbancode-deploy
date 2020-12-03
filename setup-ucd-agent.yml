@@ -67,8 +67,7 @@
         path: "/etc/systemd/system/{{ ucda_service_file }}"
         mode: '0755'
 
-#TODO: during run on Ubuntu this failed the first time
-  - name: Change ownership of AGENT installation direcotry
+  - name: Change ownership of AGENT installation directory
     become: yes
     file:
         path: "{{ install_agent_dir }}"
@@ -93,7 +92,6 @@
   - debug:
       var: ansible_facts.services["{{ ucda_service_file }}"]
 
-#TODO: failed during run against ubuntu server
   - name: make this agent the artifact import agent
     uri:
         url: "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/cli/systemConfiguration"

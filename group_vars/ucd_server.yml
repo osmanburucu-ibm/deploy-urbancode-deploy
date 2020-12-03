@@ -18,7 +18,6 @@ ucds_upgrade_log_name: ucdsupgrade.log
 
 # install.properties variables 
 install_server_dir: /opt/ucd/server
-ucd_server_install_dir: /opt/ucd/server
 
 ucd_server_hostname: "{{ inventory_hostname }}"
 ucd_server_hostname_short: "{{ inventory_hostname_short }}"
@@ -76,8 +75,8 @@ ucd_server:
         connector_install_dir: "{{ ucd_server.mysql.connector_file_name }}"
     install_vars: 
     # ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack
-    #    version: 7.0.4.2.1038002
-        version: 7.0.5.2.1050384
+        version: 7.0.4.2.1038002
+#        version: 7.0.5.2.1050384
         file_name: ibm-ucd-{{ ucd_version }}
         dir: ibm-ucd-install
         file_extension: zip
