@@ -85,3 +85,7 @@ IBM Austria, Vienna
 ~~~sh
 ansible-playbook -i hosts -u root setup-ucd-agents.yml -e 'ucd_server_hostname=<name of the ucd server>'
 ~~~
+
+## Upgrading
+
+Added a new playbook for upgrading the server in silent mode. Is is based on the informtation found here: [UrbanCode Deploy KnowledgeCenter](https://www.ibm.com/support/knowledgecenter/SS4GSP_7.1.0/com.ibm.udeploy.install.doc/topics/upgradeInstall.html)

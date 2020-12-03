@@ -1,0 +1,111 @@
+---
+- hosts: ucd_server
+  vars:
+    ucd_version: 7.1.0.3.1069281
+  gather_facts: yes
+  become: yes
+  tasks:
+
+  - name: include variables
+    include_vars:
+      file: group_vars/db_server.yml
+      name: dbserver
+
+  - name: create a download directory if not exists
+    become: yes
+    file:
+      path: "{{ download_dir }}"
+      state: directory
+      recurse: yes
+
+  - name: download ucd installation pack
+    become: yes
+    copy:
+      src: "{{ installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      dest: "{{ download_dir }}"
+
+  - name: unzip ucd installation pack
+    unarchive:
+      src: "{{ download_dir }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ ucds_install_dir_name }}"
+      remote_src: yes
+
+#TODO: if mariadb or mysql was used before 7.0.5 do run following SQL statement 
+# ALTER TABLE vc_persistent_record MODIFY persistent_data longtext null, ADD compressed_data longblob null, lock=none
+
+#TODO: message all that server will be upgraded
+
+  - name: stop UCDS service
+    become: yes
+    service:
+      name: "{{ ucds_service_name }}"
+      enabled: yes
+      state: stopped
+
+#TODO: ensure that service is stopped
+# Check to ensure that there is no file server.pid in the server_install/var folder. 
+# Check for running system processes. For example, on Linux, you can use the netstat or ps commands. For example, if the server is running on port 8443, use the command netstat -nap | grep 8443. You can also run ps -ef | grep server and look for the server system process in the results.
+# If any server processes are still running, stop them.
+
+# wait so that service is stopped!
+  - pause:
+      seconds: 60
+
+#TODO: backup database and server 
+# 
+  - name: download jdbc-driver/connector for mariadb/mysql
+    become: yes
+    get_url:
+      url: "https://dev.mysql.com/get/Downloads/Connector-J/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      dest: "{{ download_dir }}"
+
+  - name: unzip jdbc-driver/connector for mariadb/mysql
+    become: yes
+    unarchive:
+      src: "{{ download_dir }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ mysql_connector_install_dir }}"
+      remote_src: yes
+
+  - name: copy jar file to ucd installation directory
+    become: yes
+    copy:
+      src: "{{ download_dir }}/{{ mysql_connector_install_dir }}/{{ mysql_connector_file_name }}.jar"
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/lib/ext/{{ mysql_connector_file_name }}.jar"
+      remote_src: yes
+      force: no
+
+  - name: update ucd installation properties
+    template: src=install.properties.j2 dest="{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+    vars:
+      install_ucd_dir: "{{ install_server_dir }}"
+      install_server_web_host: "{{ ucd_server_hostname }}"
+      dbusername: "{{ dbserver.ucdserver_dbuser }}"
+      dbpassword: "{{ dbserver.ucdserver_upassword }}"
+      dbhostname: "{{ dbserver.mysql_hostname }}"
+      dbname: "{{ dbserver.ucdserver_dbname }}"
+      dbport: "{{ dbserver.mysql_port }}"
+
+  - name: upgrade UCD silently
+    become: yes
+    shell: ./install-server.sh -silent -install-dir {{ install_server_dir }}
+    register: ucdsupgradelog
+    args:
+      chdir: "{{ download_dir }}/{{ ucds_install_dir_name }}"
+      creates: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_upgrade_log_name }}"
+  - name: create ucdsupgrade.log
+    copy:
+      content: "{{  ucdsupgradelog }}"
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_upgrade_log_name }}"
+
+  - name: start UCDS service
+    become: yes
+    service:
+      name: "{{ ucds_service_name }}"
+      enabled: yes
+      state: started
+
+# wait so that service is up and running!
+  - pause:
+      seconds: 60
