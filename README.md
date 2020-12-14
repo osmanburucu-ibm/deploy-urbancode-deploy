@@ -10,12 +10,12 @@ A lot of the used code has been found during my search on Ansible documentation,
 
 Which environment i used:
 Visual Studo Code with Ansible, Better Jinja, Jinja, Todo Tree Plugins
-Ansible (Mac OS X) V 2.9.2
-Python 3.7.5
-VMWare Fusion
+Ansible (Mac OS X) V 2.9.2 and (Windows 10 with WSL2 Ubuntu 20.04) V2.9.6
+Python 3.7.5 on WSL2 it is 3.8.5
+VMWare Fusion, VMWare Workstation Pro 16.1
 CENTOS 7 V1908 freshly installed, nothing special set up!
-RHEL 7.7
-UBUNTU 18.04
+CENTOS 8
+UBUNTU 18.04 and 20.04
 
 What is happening?
 The freshly setup server is bootstraped so that Ansible can work (using Ansible to bootstrap it ;))
@@ -36,8 +36,8 @@ IBM Austria, Vienna
 ## Steps
 
 * create a local directory for all artifacts
-  * example: 
-    * ~/Source/demo_assets as base directory for all 
+  * example:
+    * ~/Source/demo_assets as base directory for all
     * ~/Source/demo_assets/UCD with binaries of installation files
     * ~/Source/demo_assets/repos
 * clone repos into repos directory
