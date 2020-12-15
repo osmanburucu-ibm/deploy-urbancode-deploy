@@ -12,9 +12,11 @@ add_user: ["lnxadm", "ucd"]
 
 
 # Base install control 
-base_docker_install: yes 
+base_docker_install: no 
 
 base_java_install: yes
 base_java_vendor: openjdk
 base_java_type: jre
 base_java_version: 8
+# get installationfiles from online locations or from local/host 
+base_download_online: no

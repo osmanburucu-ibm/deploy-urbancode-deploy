@@ -1,5 +1,9 @@
+# installation files of UCD
+ucd_installfiles_location: "{{ all_source_directory }}/UCD" 
 # mysql / mariadb mysql variables
-mysql_connector_file_name: mysql-connector-java-8.0.19
+db_source_directory: "{{ all_source_directory }}/DB"
+mysl_connector_directory: "{{ db_source_directory }}/MySQL"
+mysql_connector_file_name: mysql-connector-java-8.0.22
 mysql_connector_file_extension: zip
 mysql_connector_install_dir: "{{ mysql_connector_file_name }}"
 

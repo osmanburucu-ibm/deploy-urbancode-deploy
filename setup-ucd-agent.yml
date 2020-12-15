@@ -85,12 +85,14 @@
   - pause:
       seconds: 30
 
-  - name: populate service facts
-    service_facts:
-    register: servicestatus
 
-  - debug:
-      var: ansible_facts.services["{{ ucda_service_file }}"]
+# service_facts of ansible 2.9.6 is faulty on ubuntu system.d 245 (https://github.com/ansible/ansible/pull/69303/files)
+  # - name: populate service facts
+  #   service_facts:
+  #   register: servicestatus
+
+  # - debug:
+  #     var: ansible_facts.services["{{ ucda_service_file }}"]
 
   - name: make this agent the artifact import agent
     uri:
@@ -103,4 +105,4 @@
         body_format: json
         validate_certs: no
         status_code: 204
-    when: ansible_facts.services["{{ ucda_service_file }}"].state =="running"
+    # when: ansible_facts.services["{{ ucda_service_file }}"].state =="running"

@@ -57,11 +57,12 @@ IBM Austria, Vienna
 * edit the hosts file and set the target servername and ip address
 * Set your Variables if the provided defaults do not fit
   * group_vars/all.yml
-    * ***installfiles_location*** is set with default to ***~/Source/demo_assets/UCD***
+    * ***all_source_directory*** is the directory on the source server where the installation files or more are get from. It is set to ***~/Source/demo_assets***
     * ***download_dir*** is the directory on the target server where the artifacts will be downloaded. It is set to ***/tmp/downloads***
     * ***base_docker_install*** if set to ***yes*** Docker will be installed
     * ***base_java_xxx*** is used to install java with given versions.
   * group_vars/ucd_server.yml
+    * ***ucd_installfiles_location*** is set with default to ***{{ all_source_directory }}/UCD***
     * ***mysql_connector_xxx*** which mysql connector to use
     * ***ucd installation files related variables*** 
       * ***ucd_version*** which UCD version will be installed. You can get the latest versions from your PA site or from IBM Fixcentral

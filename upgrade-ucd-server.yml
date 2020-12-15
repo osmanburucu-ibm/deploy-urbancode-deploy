@@ -18,11 +18,19 @@
       state: directory
       recurse: yes
 
-  - name: download ucd installation pack
+  - name: download ucd installation pack offline
     become: yes
     copy:
-      src: "{{ installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      src: "{{ ucd_installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
+    when: not base_download_online
+
+  - name: download ucd installation pack online
+    become: yes
+    copy:
+      src: "{{ ucd_installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
+      dest: "{{ download_dir }}"
+    when: base_download_online
 
   - name: unzip ucd installation pack
     unarchive:
@@ -54,11 +62,19 @@
 
 #TODO: backup database and server 
 # 
-  - name: download jdbc-driver/connector for mariadb/mysql
+  - name: download jdbc-driver/connector for mariadb/mysql online
     become: yes
     get_url:
       url: "https://dev.mysql.com/get/Downloads/Connector-J/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
+    when: base_download_online
+
+  - name: download jdbc-driver/connector for mariadb/mysql offline
+    become: yes
+    copy:
+      src: "{{ mysl_connector_directory }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      dest: "{{ download_dir }}"  
+    when: not base_download_online
 
   - name: unzip jdbc-driver/connector for mariadb/mysql
     become: yes
