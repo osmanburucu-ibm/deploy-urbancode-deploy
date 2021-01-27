@@ -10,7 +10,7 @@
     vars:
         java_vendor: "{{ base_java_vendor }}"
         java_type: "{{ base_java_type }}"
-        java_version: "{{ base_java_version }}"
+#        java_version: "{{ base_java_version }}"
     when: base_java_install
 
   #TODO: need better solution for java home link

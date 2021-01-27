@@ -1,7 +1,7 @@
 ---
 - hosts: ucd_server
   vars:
-    ucd_version: 7.1.1.1.1074331
+    ucd_version: 7.1.1.2.1090482
   gather_facts: yes
   become: yes
   tasks:
