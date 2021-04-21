@@ -7,11 +7,13 @@ all_source_directory: ~/Source/demo_assets
 installfiles_location: "{{ all_source_directory }}/UCD" 
 download_dir: /tmp/downloads
 
-add_user: ["lnxadm", "ucd"]
+add_user: ["lnxadm", "ucd", "sysadmin"]
 
 
 
 # Base install control 
+base_fqdn_set: no
+
 base_docker_install: yes 
 
 base_java_install: yes
