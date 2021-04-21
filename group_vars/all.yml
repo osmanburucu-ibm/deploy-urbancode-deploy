@@ -13,6 +13,7 @@ add_user: ["lnxadm", "ucd", "sysadmin"]
 
 # Base install control 
 base_fqdn_set: no
+base_firewall_rules: yes
 
 base_docker_install: yes 
 

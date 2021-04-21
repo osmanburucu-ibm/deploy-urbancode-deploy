@@ -1,7 +1,8 @@
 ---
-    - import_playbook: bootstrap.yml
-    - import_playbook: setup-base.yml
-    # - import_playbook: setup-firewall-rules.yml
-    - import_playbook: setup-ucd-server.yml
-    - import_playbook: setup-ucd-agent.yml
-    - import_playbook: setup-ucd-plugins.yml
+  - import_playbook: bootstrap.yml
+  - import_playbook: setup-base.yml
+  - import_playbook: setup-firewall-rules.yml
+    when: base_firewall_rules
+  - import_playbook: setup-ucd-server.yml
+  - import_playbook: setup-ucd-agent.yml
+  - import_playbook: setup-ucd-plugins.yml
