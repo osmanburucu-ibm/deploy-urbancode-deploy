@@ -39,6 +39,9 @@ ucd_server_group: root
 ucds_admin_user: admin
 ucds_initial_admin_pwd: admin
 
+install_server_web_http_port: 8181
+ucd_server_http_port: "{{ install_server_web_http_port }}"
+
 install_server_web_https_port: 8443
 ucd_server_https_port: 8443
 
