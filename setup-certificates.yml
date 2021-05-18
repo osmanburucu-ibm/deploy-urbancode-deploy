@@ -1,6 +1,6 @@
 ---
-
-- hosts: ucd_server
+- name: setup certificates
+  hosts: ucd_server
   become: yes
   tasks:
   - name: install pip

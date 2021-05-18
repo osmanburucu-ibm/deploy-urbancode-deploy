@@ -1,5 +1,6 @@
 ---
-- hosts: ucd_server
+- name: Install UCD Agent 
+  hosts: ucd_server
   gather_facts: yes
   become: yes
   tasks:
@@ -16,6 +17,7 @@
       host: "{{ ucd_server_hostname }}"
       port: "{{ install_server_web_https_port }}"
       timeout: 30
+
   - debug: msg=OK
 
   - name: download ucd-agent from server
@@ -74,6 +76,7 @@
         owner: "{{ ucd_agent_user }}"
         group: "{{ ucd_agent_group }}"
 
+# TODO:use systemd module from ansible!
   - name: start AGENT service
     become: yes
     service:

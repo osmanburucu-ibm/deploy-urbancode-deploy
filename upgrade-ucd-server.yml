@@ -1,5 +1,7 @@
 ---
-- hosts: ucd_server
+- name: upgrade UCD Server 
+  hosts: ucd_server
+# INFO: provide which version to use from command line parameter!
 #  vars:
 #    ucd_version: 7.1.1.1.1090482
   gather_facts: yes

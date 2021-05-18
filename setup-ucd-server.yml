@@ -1,5 +1,6 @@
 ---
-- hosts: ucd_server
+- name: install UCD Server 
+  hosts: ucd_server
 #  gather_facts: yes
   become: yes
   tasks:
@@ -114,6 +115,7 @@
         owner: "{{ ucd_server_user }}"
         group: "{{ ucd_server_group }}"
 
+# TODO: use ansible systemd module!
   - name: start UCDS service
     become: yes
     service:

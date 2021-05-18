@@ -1,5 +1,7 @@
 ---
-- hosts: ucd_agent
+# TODO: provide the means for multiple agents on single host also!
+- name: install multiple UCD Agents on target hosts 
+  hosts: ucd_agent
   gather_facts: yes
   become: yes
   tasks:
@@ -77,7 +79,8 @@
         path: "{{ install_agent_dir }}"
         owner: "{{ ucd_agent_user }}"
         group: "{{ ucd_agent_group }}"
-
+        
+# TODO:use systemd module from ansible!
   - name: start AGENT service
     become: yes
     service:

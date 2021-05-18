@@ -1,5 +1,6 @@
 ---
-- hosts: ucd_server
+- name: setup firewall rules
+  hosts: ucd_server
   become: yes
   tasks:
     - name: include variables from group_vars
