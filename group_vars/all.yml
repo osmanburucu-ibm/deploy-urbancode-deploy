@@ -7,7 +7,7 @@ all_source_directory: ~/Source/demo_assets
 installfiles_location: "{{ all_source_directory }}/UCD" 
 download_dir: /tmp/downloads
 
-add_user: ["lnxadm", "ucd", "sysadmin"]
+add_user: ["lnxadm", "jenkins", "nexus", "ucd"]
 
 
 

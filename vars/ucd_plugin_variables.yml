@@ -7,13 +7,13 @@
 ucd_plugins:
     dbupgrader:
         name: DBUpgrader
-        version: 3.1056567
+        version: 3.1103413
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin
     tomcat:
         name: Tomcat
-        version: 7.1056532
+        version: 7.1107438
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin

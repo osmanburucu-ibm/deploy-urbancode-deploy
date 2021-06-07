@@ -13,6 +13,15 @@
         java_type: "{{ base_java_type }}"
 #        java_version: "{{ base_java_version }}"
     when: base_java_install
+  - name: create user
+    user: 
+      name: "{{ item }}"
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+      password: "$6$11pK4CenNYHjG7mu$cLoic06zhk.L8fYPAnlo.Bl.HtGizoFRXpHXYoWWJYX7ulrg02J8N6fuBUiodItFeL3CFrJ1X7kUkhv/XwYiA0"
+    loop: "{{ add_user }}"
+
 
   #TODO: need better solution for java home link
   - name: java symbolic link
