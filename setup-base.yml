@@ -11,25 +11,26 @@
     vars:
         java_vendor: "{{ base_java_vendor }}"
         java_type: "{{ base_java_type }}"
-#        java_version: "{{ base_java_version }}"
+        java_version: "{{ base_java_version }}"
     when: base_java_install
-  - name: create user
-    user: 
-      name: "{{ item }}"
-      generate_ssh_key: yes
-      ssh_key_bits: 2048
-      ssh_key_file: .ssh/id_rsa
-      password: "$6$11pK4CenNYHjG7mu$cLoic06zhk.L8fYPAnlo.Bl.HtGizoFRXpHXYoWWJYX7ulrg02J8N6fuBUiodItFeL3CFrJ1X7kUkhv/XwYiA0"
-    loop: "{{ add_user }}"
+   - name: create user
+     user: 
+       name: "{{ item }}"
+       generate_ssh_key: yes
+       ssh_key_bits: 2048
+       ssh_key_file: .ssh/id_rsa
+       password: "$6$m90GrdNKD8pcklWW$J4Ml08Wr64mqA78zJ7hIu7gIh.AFj5xY8doV0Lfr8Js3S/LlwXm/qGvoN9kw4WoVA12LzfKEMAyzqghIMsacZ/"
+       update_password: on_create 
+     loop: "{{ add_user }}"
 
 
   #TODO: need better solution for java home link
-  - name: java symbolic link
-    file:
-      src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64/jre"
-      dest: /usr/lib/jvm/jre
-      state: link
-    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
+  # - name: java symbolic link
+  #   file:
+  #     src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64/jre"
+  #     dest: /usr/lib/jvm/jre
+  #     state: link
+  #   when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
 
   - include_role:
       name: geerlingguy.docker

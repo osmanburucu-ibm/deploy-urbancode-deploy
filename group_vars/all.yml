@@ -1,25 +1,25 @@
 ---
-bootstrap_user: root
+# bootstrap_user: root
 ntpserver: at.pool.ntp.org
 
 ansible_ssh_private_key_file: ~/.ssh/ansible-control-host
-all_source_directory: ~/Source/demo_assets
-installfiles_location: "{{ all_source_directory }}/UCD" 
+all_source_directory: ~/Documents/Source/demo_assets
+installfiles_location: "{{ all_source_directory }}/UCD"
 download_dir: /tmp/downloads
 
-add_user: ["lnxadm", "jenkins", "nexus", "ucd"]
+add_user: ["sysadmin", "ibmuser", "lnxadm"]
+sudo_user: ["sysadmin", "lnxadm"]
+# password is Passw0rd
 
+# Base install control
+base_fqdn_set: true
+base_firewall_rules: true
 
+base_docker_install: false
 
-# Base install control 
-base_fqdn_set: yes
-base_firewall_rules: yes
-
-base_docker_install: yes 
-
-base_java_install: yes
+base_java_install: true
 base_java_vendor: openjdk
-base_java_type: jre
-base_java_version: 8
-# get installationfiles from online locations or from local/host 
-base_download_online: no
+base_java_type: jdk
+base_java_version: "11"
+# get installationfiles from online locations or from local/host
+base_download_online: false

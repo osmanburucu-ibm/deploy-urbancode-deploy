@@ -1,31 +1,33 @@
 ---
 # plugin related parameters
 # plugin_type: is used for the directory name of the staging directory when copying
-# command / source 
+# command / source
 # plugin_type2: is used when importing with curl
-# automationPlugin / sourceConfigPlugin 
+# automationPlugin / sourceConfigPlugin
 ucd_plugins:
     dbupgrader:
-        name: DBUpgrader
-        version: 3.1103413
+        directory_name: DBUpgrader
+        file_name: ucd-DBUpgrader
+        version: 4.1127382
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin
     tomcat:
-        name: Tomcat
+        directory_name: Tomcat
+        file_name: Tomcat
         version: 7.1107438
         extension: zip
         plugin_type: command
         plugin_type2: automationPlugin
 
-# example download info  
-#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/Tomcat/Tomcat-7.1056532.zip
-#http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.1056567.zip
-#new location for plugins is now https://www.urbancode.com/uc-downloads/plugins/
+# example download info
+# http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/Tomcat/Tomcat-7.1056532.zip
+# http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd/DBUpgrader/DBUpgrader-3.1056567.zip
+# https://www.urbancode.com/uc-downloads/plugins/ibmucd/DBUpgrader/ucd-DBUpgrader-4.1127382.zip
+# new location for plugins is now https://www.urbancode.com/uc-downloads/plugins/
 # ucd_plugins_download_url: http://public.dhe.ibm.com/software/products/UrbanCode/plugins/ibmucd
 ucd_plugins_download_url: https://www.urbancode.com/uc-downloads/plugins/ibmucd
 ucd_plugins_download_directory: plugins
 
-# location of staging directory when copying plugins into the server 
+# location of staging directory when copying plugins into the server
 ucd_server_plugins_dirctory: "{{ install_server_dir }}/appdata/var/plugins"
-
