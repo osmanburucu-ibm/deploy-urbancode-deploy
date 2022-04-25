@@ -25,13 +25,13 @@
     loop: "{{ add_user }}"
 
 
-  #TODO: need better solution for java home link
-  # - name: java symbolic link
-  #   file:
-  #     src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64/jre"
-  #     dest: /usr/lib/jvm/jre
-  #     state: link
-  #   when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
+ # TODO: need better solution for java home link
+  - name: java symbolic link
+    file:
+      src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64"
+      dest: /usr/lib/jvm/jre
+      state: link
+    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
 
   - include_role:
       name: geerlingguy.docker
