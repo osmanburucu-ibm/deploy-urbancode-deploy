@@ -7,15 +7,17 @@ all_source_directory: ~/RnD/Source/demo_assets
 installfiles_location: "{{ all_source_directory }}/UCD"
 download_dir: /tmp/downloads
 
-add_user: ["sysadmin", "ibmuser", "lnxadm"]
-sudo_user: ["sysadmin", "lnxadm"]
+# add_user: ["sysadmin", "ibmuser", "lnxadm"]
+add_user: []
+# sudo_user: ["sysadmin", "lnxadm"]
+sudo_user: []
 # password is Passw0rd
 
 # Base install control
 base_fqdn_set: true
 base_firewall_rules: true
 
-base_docker_install: true
+base_docker_install: false
 
 base_java_install: true
 base_java_vendor: openjdk

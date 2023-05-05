@@ -1,49 +1,35 @@
 ---
-- name: bootstrap all hosts
+- name: Bootstrap all hosts
   hosts: all
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
 
   roles:
     - role: robertdebock.bootstrap
-      bootstrap_user: root
 
-# - name: fix setlocale setting
-#   hosts: all
-#   become: yes
-
-#   roles:
-#     - robertdebock.locale
-
-- hosts: all
+- name: Configuring the system
+  hosts: all
   tasks:
   - name: Disable SELinux
-    become: yes
-
+    become: true
     selinux:
       state: disabled
     when: ansible_facts['os_family'] == "RedHat"
 
-- name: add epel repository
-  hosts: all
-  become: yes
+  - name: Add epel repository
+    become: true
+    roles:
+      - role: geerlingguy.repo-epel
+        when: ansible_facts['os_family'] == "RedHat"
 
-  roles:
-    - role: geerlingguy.repo-epel
-      when: ansible_facts['os_family'] == "RedHat"
+  - name: Update all hosts
+    become: true
+    gather_facts: true
+    roles:
+      - robertdebock.update
 
-- name: update all hosts
-  hosts: all
-  become: yes
-  gather_facts: yes
-
-  roles:
-    - robertdebock.update
-
-- name: add hostname+ip to /etc/hosts
-  hosts: all
-  become: yes
-
-  roles:
-    - role: holms.fqdn
-      when: base_fqdn_set
+  - name: Add hostname+ip to /etc/hosts
+    become: true
+    roles:
+      - role: holms.fqdn
+        when: base_fqdn_set

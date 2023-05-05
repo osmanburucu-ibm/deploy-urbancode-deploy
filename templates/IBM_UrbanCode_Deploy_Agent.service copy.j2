@@ -4,13 +4,16 @@ Description = IBM UrbanCode Deploy Agent
 After = network.target network.service
 
 [Service]
+ExecStartPre = /bin/sleep 10
+WorkingDirectory = {{ installation_location }}
 ExecStart = {{ installation_location }}/bin/agent start
 ExecStop = {{ installation_location }}/bin/agent stop
 Type = forking
-GuessMainPID=no
 Restart = always
-RestartSec = 10
-TimeoutSec = 10
+RestartSec = 30
+TimeoutSec = 30
+User = {{ service_user }}
+Group = {{ service_group }}
 
 [Install]
 WantedBy = multi-user.target

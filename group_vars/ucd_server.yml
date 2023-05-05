@@ -25,7 +25,9 @@ mysql_connector_install_dir: "{{ mysql_connector_file_name }}"
 # ucd_version: 7.1.2.1.1104332
 # ucd_version: 7.2.2.0.1130571
 # ucd_version: 7.2.2.1.1131693
-ucd_version: 7.2.3.0.1133742
+# ucd_version: 7.2.3.0.1133742
+# ibm-ucd-7.3.0.1.1147781
+ucd_version: 7.3.0.1.1147781
 ucds_file_name: ibm-ucd-{{ ucd_version }}
 ucds_file_extension: zip
 ucds_install_dir_name: ibm-ucd-install
