@@ -1,0 +1,87 @@
+---
+# TODO: provide the means for multiple agents on single host also!
+- name: Upgrade/Update multiple UCD Agents on target hosts
+  hosts: ucd_agent
+  tasks:
+
+   - name: Include variables
+     ansible.builtin.include_vars:
+      file: group_vars/ucd_server.yml
+
+   - name: Create a download directory if not exists
+     ansible.builtin.file:
+      path: "{{ download_dir }}"
+      state: directory
+      recurse: true
+
+   - name: Download ucd-agent from server when ONLINE is selected
+     ansible.builtin.get_url:
+      url: "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/tools/{{ ucda_file_name }}"
+      dest: "{{ download_dir }}"
+      validate_certs: false
+      mode: '0644'
+     when: base_download_online
+
+   - name: Download ucd-agent installation pack offline
+     ansible.builtin.copy:
+      src: "{{ ucd_installfiles_location }}/{{ ucda_file_name }}"
+      dest: "{{ download_dir }}"
+      mode: preserve
+     when: not base_download_online
+
+   - name: Unzip ucd-agent
+     ansible.builtin.unarchive:
+      src: "{{ download_dir }}/{{ ucda_file_name }}"
+      dest: "{{ download_dir }}"
+      creates: "{{ download_dir }}/{{ ucda_install_dir_name }}"
+      remote_src: true
+
+   - name: Update ucd-agent installation properties
+     ansible.builtin.lineinfile:
+      path: "{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+      line: "locked/agent.home={{ install_agent_dir }}"
+
+   - name: Stop AGENT service
+     ansible.builtin.service:
+      name: "{{ ucda_service_name }}"
+      enabled: true
+      state: stopped
+
+   - name: Upgrade AGENT silently
+     ansible.builtin.cmd: "sh {{ download_dir }}/{{ ucda_install_dir_name }}/install-agent-from-file.sh install.properties"
+     register: ucdainstalllog
+     args:
+      chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
+      creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+
+   - name: Create ucdainstall.log
+     copy:
+      content: "{{  ucdainstalllog }}"
+      dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+
+   - name: Update AGENT service properties
+     template:
+      src: "{{ ucda_service_file }}.j2"
+      dest: "/etc/systemd/system/{{ ucda_service_file }}"
+     vars:
+      installation_location: "{{ install_agent_dir }}"
+      service_user: "{{ ucd_agent_user }}"
+      service_group: "{{ ucd_agent_group }}"
+
+   - name: Grant read and execute permissions to AGENT service
+     ansible.builtin.file:
+      path: "/etc/systemd/system/{{ ucda_service_file }}"
+      mode: '0755'
+
+   - name: Change ownership of AGENT installation directory
+     file:
+      path: "{{ install_agent_dir }}"
+      owner: "{{ ucd_agent_user }}"
+      group: "{{ ucd_agent_group }}"
+
+# TODO:use systemd module from ansible!
+   - name: start AGENT service
+     service:
+      name: "{{ ucda_service_name }}"
+      enabled: true
+      state: started
