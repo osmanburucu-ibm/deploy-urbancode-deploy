@@ -90,3 +90,8 @@ ansible-playbook -i hosts -u root setup-ucd-agents.yml -e 'ucd_server_hostname=<
 ## Upgrading
 
 Added a new playbook for upgrading the server in silent mode. Is is based on the informtation found here: [UrbanCode Deploy KnowledgeCenter](https://www.ibm.com/support/knowledgecenter/SS4GSP_7.1.0/com.ibm.udeploy.install.doc/topics/upgradeInstall.html)
+
+## other
+
+* [another Ansible role for installing mysql, supporting also windows](ansible-galaxy install kaos2oak.mysql)
+* mysql_installers_path_on_target

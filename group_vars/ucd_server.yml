@@ -5,12 +5,13 @@ ucd_installfiles_location: "{{ all_source_directory }}/UCD"
 # Online location of ucd files
 ucd_files_online_location: "https://example.com"
 
-# mysql / mariadb mysql variables
+# mysql variables
 db_source_directory: "{{ all_source_directory }}/DB"
-mysl_connector_directory: "{{ db_source_directory }}/MySQL"
-mysql_connector_file_name: mysql-connector-java-8.0.28
+mysql_connector_directory: "{{ db_source_directory }}/MySQL"
+mysql_connector_file_name: mysql-connector-j-8.0.33
 mysql_connector_file_extension: zip
 mysql_connector_install_dir: "{{ mysql_connector_file_name }}"
+mysql_connector_online_location: "https://dev.mysql.com/get/Downloads/Connector-J"
 
 # ucd installation files related
 # ucds_file_name: ibm-ucd-7.0.4.1.1036185 - replaced 2019.12.05 with new fixpack

@@ -8,9 +8,9 @@ installfiles_location: "{{ all_source_directory }}/UCD"
 download_dir: /tmp/downloads
 
 # add_user: ["sysadmin", "ibmuser", "lnxadm"]
-add_user: []
+add_user: [lnxadm]
 # sudo_user: ["sysadmin", "lnxadm"]
-sudo_user: []
+sudo_user: [lnxadm]
 # password is Passw0rd
 
 # Base install control

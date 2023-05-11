@@ -1,60 +1,62 @@
 ---
-- name: Install UCD Agent 
+- name: Install UCD Agent
   hosts: ucd_server
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   tasks:
 
-  - name: create a download directory if not exists
-    become: yes
-    file:
+  - name: Create a download directory if not exists
+    ansible.builtin.file:
       path: "{{ download_dir }}"
       state: directory
-      recurse: yes
+      recurse: true
 
-  - name: wait
-    wait_for:
-      host: "{{ ucd_server_hostname }}"
-      port: "{{ install_server_web_https_port }}"
-      timeout: 30
-
-  - debug: msg=OK
-
-  - name: download ucd-agent from server
-    become: yes
-    get_url:
+  - name: Download ucd-agent from server when ONLINE is selected
+    ansible.builtin.get_url:
       url: "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/tools/{{ ucda_file_name }}"
       dest: "{{ download_dir }}"
-      validate_certs: no
+      validate_certs: false
+      mode: '0644'
+    when: base_download_online
 
-  - name: unzip ucd-agent
-    become: yes
-    unarchive:
-      src: "{{ download_dir }}/{{ ucda_file_name }}"
+  - name: Download ucd-agent installation pack offline
+    ansible.builtin.copy:
+      src: "{{ ucd_installfiles_location }}/{{ ucda_file_name }}"
       dest: "{{ download_dir }}"
-      creates: "{{ download_dir }}/{{ ucda_install_dir_name }}"
-      remote_src: yes
+      mode: preserve
+    when: not base_download_online
 
-  - name: update ucd-agent installation properties
-    template: src=agent.install.properties.j2 dest="{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+  - name: Unzip ucd-agent
+    ansible.builtin.unarchive:
+       src: "{{ download_dir }}/{{ ucda_file_name }}"
+       dest: "{{ download_dir }}"
+       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}"
+       remote_src: true
+
+  - name: Update ucd-agent installation properties
+    ansible.builtin.template:
+       src: agent.install.properties.j2
+       dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+       mode: '0640'
     vars:
       install_agent_home: "{{ install_agent_dir }}"
       ucda_name: "{{ ucd_agent_name }}"
 
-  - name: install AGENT silently
-    become: yes
-    shell: ./install-agent-from-file.sh install.properties
+  - name: Install AGENT silently
+    ansible.builtin.cmd: "sh {{ download_dir }}/{{ ucda_install_dir_name }}/install-agent-from-file.sh install.properties"
     register: ucdainstalllog
     args:
       chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
-  - name: create ucdainstall.log
-    copy:
+
+  - name: Create ucdainstall.log
+    ansible.builtin.copy:
       content: "{{  ucdainstalllog }}"
       dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+      mode: '0640'
 
   - name: update AGENT service properties
-    become: yes
+    become: true
     template:
         src: "{{ ucda_service_file }}.j2"
         dest: "/etc/systemd/system/{{ ucda_service_file }}"
@@ -64,13 +66,13 @@
         service_group: "{{ ucd_agent_group }}"
 
   - name: Grant read and execute permissions to AGENT service
-    become: yes
+    become: true
     file:
         path: "/etc/systemd/system/{{ ucda_service_file }}"
         mode: '0755'
 
   - name: Change ownership of AGENT installation directory
-    become: yes
+    become: true
     file:
         path: "{{ install_agent_dir }}"
         owner: "{{ ucd_agent_user }}"
@@ -78,24 +80,15 @@
 
 # TODO:use systemd module from ansible!
   - name: start AGENT service
-    become: yes
+    become: true
     service:
       name: "{{ ucda_service_name }}"
-      enabled: yes
+      enabled: true
       state: started
 
 # wait so that service is up and running!
   - pause:
       seconds: 30
-
-
-# service_facts of ansible 2.9.6 is faulty on ubuntu system.d 245 (https://github.com/ansible/ansible/pull/69303/files)
-  # - name: populate service facts
-  #   service_facts:
-  #   register: servicestatus
-
-  # - debug:
-  #     var: ansible_facts.services["{{ ucda_service_file }}"]
 
   - name: make this agent the artifact import agent
     uri:
@@ -104,7 +97,7 @@
         password: "{{ ucds_initial_admin_pwd }}"
         method: PUT
         body: ' { "artifactAgent" : "{{ ucd_agent_name }}" }'
-        force_basic_auth: yes
+        force_basic_auth: true
         body_format: json
         validate_certs: no
         status_code: 204

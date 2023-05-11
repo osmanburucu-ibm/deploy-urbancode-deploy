@@ -1,73 +1,73 @@
 ---
 # TODO: how to use base_download_online here...
-- name: setup base os requirements
+- name: Setup base os requirements
   hosts: all
-  become: yes
+  become: true
   tasks:
-  - include_role:
+  - name: Install buildtools
+    ansible.builtin.include_role:
       name: robertdebock.buildtools
-  - include_role:
+  - name: Install Java
+    ansible.builtin.include_role:
       name: robertdebock.java
     vars:
-        java_vendor: "{{ base_java_vendor }}"
-        java_type: "{{ base_java_type }}"
-        java_version: "{{ base_java_version }}"
+      java_vendor: "{{ base_java_vendor }}"
+      java_type: "{{ base_java_type }}"
+      java_version: "{{ base_java_version }}"
     when: base_java_install
 
-  - name: create user
-    user: 
+  - name: Create user
+    ansible.builtin.user:
       name: "{{ item }}"
-      generate_ssh_key: yes
+      append: true
+      groups: wheel
+      generate_ssh_key: true
       ssh_key_bits: 2048
       ssh_key_file: .ssh/id_rsa
-      password: "$6$m90GrdNKD8pcklWW$J4Ml08Wr64mqA78zJ7hIu7gIh.AFj5xY8doV0Lfr8Js3S/LlwXm/qGvoN9kw4WoVA12LzfKEMAyzqghIMsacZ/"
-      update_password: on_create 
+      password: "$6$rounds=656000$JcUb6pek3F0me/bz$KzFusdyEugz96MOdXV924gNLnXVj0vlt5qfwYDn3i2LgJKHH4fMUpQGbkIqGqxIacNPduiCQJVZU7ApHuHuVx0"
+      update_password: on_create
     loop: "{{ add_user }}"
 
-
  # TODO: need better solution for java home link
-  - name: java symbolic link
-    file:
+  - name: Java symbolic link
+    ansible.builtin.file:
       src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64"
       dest: /usr/lib/jvm/jre
       state: link
     when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
 
-  - include_role:
+  - name: Install Docker
+    ansible.builtin.include_role:
       name: geerlingguy.docker
     vars:
-        docker_users: "{{ add_user }}"
-        docker_edition: 'ce'
-        docker_package_state: present
-        docker_install_compose: true
+      docker_users: "{{ add_user }}"
+      docker_edition: 'ce'
+      docker_package_state: present
+      docker_install_compose: true
     when: base_docker_install
 
-  - name: set os specific variable of packagename
-    include_vars:
+  - name: Set os specific variable of packagename
+    ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
       - 'vars/{{ ansible_distribution }}.yml'
       - 'vars/{{ ansible_os_family }}.yml'
 
-  - name: verify that prereqs are installed
-    package:
+  - name: Verify that prereqs are installed
+    ansible.builtin.package:
         name: "{{ required_os_packages }}"
         state: present
 
-- hosts: db_server
-  become: yes
+- name: Setup DB Server requirements
+  hosts: db_server
+  become: true
   pre_tasks:
-  - name: set os specific variable of packagename
-    include_vars:
+  - name: Set os specific variable of packagename
+    ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
       - 'vars/{{ ansible_distribution }}.yml'
       - 'vars/{{ ansible_os_family }}.yml'
-
-  # - name: verify that prereqs are installed
-  #   package: 
-  #       name: "{{ required_db_packages }}"
-  #       state: present
 
   roles:
     - role: geerlingguy.mysql
@@ -81,10 +81,10 @@
           host: "localhost"
 
   post_tasks:
-  - name: add grant to  UCD DB User
-    mysql_user:
+  - name: Add grant to  UCD DB User
+    community.mysql.mysql_user:
       name: "{{ ucdserver_dbuser }}"
-      append_privs: yes
+      append_privs: true
       priv: "{{ ucdserver_dbname }}.*:ALL,GRANT"
       host: "%"
       state: present
