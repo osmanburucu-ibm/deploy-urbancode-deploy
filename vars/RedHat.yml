@@ -5,7 +5,7 @@ required_db_packages:
 
 required_os_packages:
     - unzip
-    - redhat-lsb
+    # - redhat-lsb
 
 services_to_stop:
     - firewalld 

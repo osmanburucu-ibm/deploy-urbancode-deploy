@@ -3,6 +3,10 @@
 - name: Setup base os requirements
   hosts: all
   become: true
+  vars_files:
+    - ../group_vars/all.yml
+    - ../group_vars/ucd_server.yml
+    - ../group_vars/db_server.yml
   tasks:
   - name: Install buildtools
     ansible.builtin.include_role:
@@ -20,21 +24,12 @@
     ansible.builtin.user:
       name: "{{ item }}"
       append: true
-      groups: wheel
       generate_ssh_key: true
       ssh_key_bits: 2048
       ssh_key_file: .ssh/id_rsa
       password: "$6$rounds=656000$JcUb6pek3F0me/bz$KzFusdyEugz96MOdXV924gNLnXVj0vlt5qfwYDn3i2LgJKHH4fMUpQGbkIqGqxIacNPduiCQJVZU7ApHuHuVx0"
       update_password: on_create
     loop: "{{ add_user }}"
-
- # TODO: need better solution for java home link
-  - name: Java symbolic link
-    ansible.builtin.file:
-      src: "/usr/lib/jvm/java-{{ base_java_version }}-openjdk-amd64"
-      dest: /usr/lib/jvm/jre
-      state: link
-    when: ansible_distribution == 'Debian' or ansible_distribution == "Ubuntu"
 
   - name: Install Docker
     ansible.builtin.include_role:
@@ -50,8 +45,8 @@
     ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
-      - 'vars/{{ ansible_distribution }}.yml'
-      - 'vars/{{ ansible_os_family }}.yml'
+      - '../vars/{{ ansible_distribution }}.yml'
+      - '../vars/{{ ansible_os_family }}.yml'
 
   - name: Verify that prereqs are installed
     ansible.builtin.package:
@@ -66,8 +61,14 @@
     ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
-      - 'vars/{{ ansible_distribution }}.yml'
-      - 'vars/{{ ansible_os_family }}.yml'
+      - '../vars/{{ ansible_distribution }}.yml'
+      - '../vars/{{ ansible_os_family }}.yml'
+  - name: Set variables
+    ansible.builtin.include_vars:
+      file: "{{ item }}"
+    with_items:
+      - '../group_vars/db_server.yml'
+      - '../group_vars/all.yml'
 
   roles:
     - role: geerlingguy.mysql

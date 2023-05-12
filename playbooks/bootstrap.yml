@@ -3,33 +3,30 @@
   hosts: all
   become: true
   gather_facts: true
-
-  roles:
-    - role: robertdebock.bootstrap
-
-- name: Configuring the system
-  hosts: all
+  vars_files:
+    - ../group_vars/all.yml
   tasks:
+
+  - name: Bootstrap
+    ansible.builtin.include_role:
+        name: robertdebock.bootstrap
+
   - name: Disable SELinux
-    become: true
-    selinux:
+    ansible.posix.selinux:
       state: disabled
     when: ansible_facts['os_family'] == "RedHat"
 
-  - name: Add epel repository
-    become: true
-    roles:
-      - role: geerlingguy.repo-epel
-        when: ansible_facts['os_family'] == "RedHat"
+  - name: Add EPEL repository
+    ansible.builtin.include_role:
+      name: geerlingguy.repo-epel
+    when: ansible_facts['os_family'] == "RedHat"
 
-  - name: Update all hosts
-    become: true
-    gather_facts: true
-    roles:
-      - robertdebock.update
+  # - name: Update all hosts
+  #   gather_facts: true
+  #   ansible.builtin.include_role:
+  #     name: robertdebock.update
 
   - name: Add hostname+ip to /etc/hosts
-    become: true
-    roles:
-      - role: holms.fqdn
-        when: base_fqdn_set
+    ansible.builtin.include_role:
+      name: holms.fqdn
+    when: base_fqdn_set

@@ -11,11 +11,11 @@ download_dir: /tmp/downloads
 add_user: [lnxadm]
 # sudo_user: ["sysadmin", "lnxadm"]
 sudo_user: [lnxadm]
-# password is Passw0rd
+# password is !#Passw0rd#! -> \!\#Passw0rd\#\! to use!
 
 # Base install control
 base_fqdn_set: true
-base_firewall_rules: true
+base_firewall_rules: false
 
 base_docker_install: false
 

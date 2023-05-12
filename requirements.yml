@@ -1,11 +1,12 @@
 ---
-- src: robertdebock.bootstrap
-- src: robertdebock.locale
-- src: geerlingguy.repo-epel
-- src: robertdebock.update
-- src: robertdebock.environment
-- src: robertdebock.buildtools
-- src: robertdebock.java
-- src: geerlingguy.mysql
-- src: geerlingguy.docker
-- src: holms.fqdn
+collections:
+  - name: robertdebock.roles
+roles:
+#   - name: robertdebock.bootstrap
+  - name: geerlingguy.repo-epel
+#   - name: robertdebock.update
+#   - name: robertdebock.buildtools
+#   - name: robertdebock.java
+  - name: geerlingguy.mysql
+  - name: geerlingguy.docker
+  - name: holms.fqdn
