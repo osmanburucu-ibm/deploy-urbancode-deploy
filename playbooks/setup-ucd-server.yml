@@ -1,76 +1,76 @@
 ---
-- name: install UCD Server 
+- name: Install UCD Server
   hosts: ucd_server
-#  gather_facts: yes
-  become: yes
+  become: true
   tasks:
 
-  - name: include variables
-    include_vars:
-      file: group_vars/db_server.yml
+  - name: Include variables
+    ansible.builtin.include_vars:
+      file: ../group_vars/db_server.yml
       name: dbserver
 
-  - name: create a download directory if not exists
-    become: yes
-    file:
+  - name: Create a download directory if not exists
+    ansible.builtin.file:
       path: "{{ download_dir }}"
       state: directory
-      recurse: yes
+      recurse: true
 
-  - name: download ucd installation pack offline
-    become: yes
-    copy:
+  - name: Download ucd installation pack offline
+    ansible.builtin.copy:
       src: "{{ ucd_installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: '0644'
     when: not base_download_online
 
-  - name: download ucd installation pack online
-    become: yes
-    get_url:
-      url: "{{ ucd_files_online_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"    
+  - name: Download ucd installation pack online
+    ansible.builtin.get_url:
+      url: "{{ ucd_files_online_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: '0644'
     when: base_download_online
 
-  - name: unzip ucd installation pack
-    unarchive:
+  - name: Unzip ucd installation pack
+    ansible.builtin.unarchive:
       src: "{{ download_dir }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
       creates: "{{ download_dir }}/{{ ucds_install_dir_name }}"
-      remote_src: yes
+      remote_src: true
 
-  - name: download jdbc-driver/connector for mariadb/mysql online
-    become: yes
-    get_url:
+  - name: Download jdbc-driver/connector for mariadb/mysql online
+    ansible.builtin.get_url:
       url: "https://dev.mysql.com/get/Downloads/Connector-J/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: '0644'
     when: base_download_online
 
-  - name: download jdbc-driver/connector for mariadb/mysql offline
-    become: yes
-    copy:
+  - name: Download jdbc-driver/connector for mariadb/mysql offline
+    ansible.builtin.copy:
       src: "{{ mysl_connector_directory }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
-      dest: "{{ download_dir }}"  
+      dest: "{{ download_dir }}"
+      mode: '0644'
     when: not base_download_online
 
   # all_source_directory
-  - name: unzip jdbc-driver/connector for mariadb/mysql
-    become: yes
-    unarchive:
+  - name: Unzip jdbc-driver/connector for mariadb/mysql
+    ansible.builtin.unarchive:
       src: "{{ download_dir }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
       creates: "{{ download_dir }}/{{ mysql_connector_install_dir }}"
-      remote_src: yes
+      remote_src: true
 
-  - name: copy jar file to ucd installation directory
-    become: yes
-    copy:
+  - name: Copy jar file to ucd installation directory
+    ansible.builtin.copy:
       src: "{{ download_dir }}/{{ mysql_connector_install_dir }}/{{ mysql_connector_file_name }}.jar"
       dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/lib/ext/{{ mysql_connector_file_name }}.jar"
-      remote_src: yes
-      force: no
+      remote_src: true
+      force: false
+      mode: '0644'
 
-  - name: update ucd installation properties
-    template: src=install.properties.j2 dest="{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+  - name: Update ucd installation properties
+    ansible.builtin.template:
+      src: install.properties.j2
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+      mode: '0644'
     vars:
       install_ucd_dir: "{{ install_server_dir }}"
       install_server_web_host: "{{ ucd_server_hostname }}"
@@ -80,49 +80,52 @@
       dbname: "{{ dbserver.ucdserver_dbname }}"
       dbport: "{{ dbserver.mysql_port }}"
 
-  - name: install UCD silently
-    become: yes
-    shell: ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home /usr/lib/jvm/jre
+  - name: Install UCD silently
+    ansible.builtin.command: "sh ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home {{ ansible_env.JAVA_HOME }}"
+    # shell: ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home /usr/lib/jvm/jre
     register: ucdsinstalllog
     args:
       chdir: "{{ download_dir }}/{{ ucds_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_install_log_name }}"
-  - name: create ucdsinstall.log
-    copy:
+
+  - name: Create ucdsinstall.log
+    ansible.builtin.copy:
       content: "{{  ucdsinstalllog }}"
       dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_install_log_name }}"
+      mode: '0644'
 
-  - name: update ucd service properties
-    become: yes
-    template:
+  - name: Update ucd service properties
+    ansible.builtin.template:
         src: "{{ ucds_service_file }}.j2"
         dest: "/etc/systemd/system/{{ ucds_service_file }}"
+        mode: '0644'
     vars:
         installation_location: "{{ install_server_dir }}"
         service_user: "{{ ucd_server_user }}"
         service_group: "{{ ucd_server_group }}"
 
   - name: Grant read and execute permissions to service
-    become: yes
-    file:
+    become: true
+    ansible.builtin.file:
         path: "/etc/systemd/system/{{ ucds_service_file }}"
         mode: '0755'
 
   - name: Change ownership of UCDS installation direcotry
-    become: yes
-    file:
+    become: true
+    ansible.builtin.file:
         path: "{{ install_server_dir }}"
         owner: "{{ ucd_server_user }}"
         group: "{{ ucd_server_group }}"
 
 # TODO: use ansible systemd module!
-  - name: start UCDS service
-    become: yes
-    service:
+  - name: Start UCDS service
+    become: true
+    ansible.builtin.service:
       name: "{{ ucds_service_name }}"
-      enabled: yes
+      enabled: true
       state: started
 
 # wait so that service is up and running!
-  - pause:
-      seconds: 60
+  - name: Wait for starting the service
+    ansible.builtin.pause:
+      seconds: 20

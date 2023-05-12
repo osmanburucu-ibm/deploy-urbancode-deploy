@@ -48,21 +48,23 @@
       state: stopped
 
    - name: Upgrade AGENT silently
-     ansible.builtin.cmd: "sh {{ download_dir }}/{{ ucda_install_dir_name }}/install-agent-from-file.sh install.properties"
+     ansible.builtin.command: "sh {{ download_dir }}/{{ ucda_install_dir_name }}/install-agent-from-file.sh install.properties"
      register: ucdainstalllog
      args:
       chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
 
    - name: Create ucdainstall.log
-     copy:
+     ansible.builtin.copy:
       content: "{{  ucdainstalllog }}"
       dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
+      mode: '0644'
 
    - name: Update AGENT service properties
-     template:
+     ansible.builtin.template:
       src: "{{ ucda_service_file }}.j2"
       dest: "/etc/systemd/system/{{ ucda_service_file }}"
+      mode: '0644'
      vars:
       installation_location: "{{ install_agent_dir }}"
       service_user: "{{ ucd_agent_user }}"
@@ -74,14 +76,15 @@
       mode: '0755'
 
    - name: Change ownership of AGENT installation directory
-     file:
+     ansible.builtin.file:
       path: "{{ install_agent_dir }}"
       owner: "{{ ucd_agent_user }}"
       group: "{{ ucd_agent_group }}"
+      mode: '0644'
 
 # TODO:use systemd module from ansible!
-   - name: start AGENT service
-     service:
+   - name: Start AGENT service
+     ansible.builtin.service:
       name: "{{ ucda_service_name }}"
       enabled: true
       state: started

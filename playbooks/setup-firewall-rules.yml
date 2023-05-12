@@ -1,21 +1,21 @@
 ---
-- name: setup firewall rules
+- name: Setup firewall rules
   hosts: ucd_server
-  become: yes
+  become: true
   tasks:
-    - name: include variables from group_vars
-      include_vars:
-        dir: group_vars
+    - name: Include variables from group_vars
+      ansible.builtin.include_vars:
+        dir: ../group_vars
 
-    - name: include variables from vars
-      include_vars:
-        dir: vars
+    - name: Include variables from vars
+      ansible.builtin.include_vars:
+        dir: ../vars
 
     - name: Firewalld settings
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item.port }}/{{ item.protocol }}"
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled
       with_items:
       - { port: "{{ mysql_port }}", protocol: "tcp" }
@@ -24,7 +24,7 @@
       when: ansible_facts['os_family'] == "RedHat"
 
     - name: UFW settings
-      ufw:
+      community.general.ufw:
         port: "{{ item.port }}"
         proto: "{{ item.protocol }}"
         rule: allow
