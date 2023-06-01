@@ -5,11 +5,11 @@
   tasks:
     - name: Include variables from group_vars
       ansible.builtin.include_vars:
-        dir: ../group_vars
+        dir: group_vars
 
     - name: Include variables from vars
       ansible.builtin.include_vars:
-        dir: ../vars
+        dir: vars
 
     - name: Firewalld settings
       ansible.posix.firewalld:

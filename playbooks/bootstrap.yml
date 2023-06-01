@@ -4,7 +4,7 @@
   become: true
   gather_facts: true
   vars_files:
-    - ../group_vars/all.yml
+    - group_vars/all.yml
   tasks:
 
   - name: Bootstrap

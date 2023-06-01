@@ -1,101 +1,102 @@
 ---
-- name: upgrade UCD Server 
+- name: Upgrade UCD Server
   hosts: ucd_server
 # INFO: provide which version to use from command line parameter!
 #  vars:
 #    ucd_version: 7.1.1.1.1090482
-  gather_facts: yes
-  become: yes
+  gather_facts: true
   tasks:
 
-  - name: include variables
-    include_vars:
+  - name: Include variables
+    ansible.builtin.include_vars:
       file: group_vars/db_server.yml
       name: dbserver
 
-  - name: create a download directory if not exists
-    become: yes
-    file:
+  - name: Create a download directory if not exists
+    ansible.builtin.file:
       path: "{{ download_dir }}"
-      state: directory
-      recurse: yes
+      state: "directory"
+      recurse: true
 
-  - name: download ucd installation pack offline
-    become: yes
-    copy:
+  - name: Download ucd installation pack offline
+    ansible.builtin.copy:
       src: "{{ ucd_installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: "0640"
     when: not base_download_online
 
-  - name: download ucd installation pack online
-    become: yes
-    copy:
+  - name: Download ucd installation pack online
+    ansible.builtin.copy:
       src: "{{ ucd_installfiles_location }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: "0640"
     when: base_download_online
 
-  - name: unzip ucd installation pack
-    unarchive:
+  - name: Unzip ucd installation pack
+    ansible.builtin.unarchive:
       src: "{{ download_dir }}/{{ ucds_file_name }}.{{ ucds_file_extension }}"
       dest: "{{ download_dir }}"
       creates: "{{ download_dir }}/{{ ucds_install_dir_name }}"
-      remote_src: yes
+      remote_src: true
 
-#TODO: if mariadb or mysql was used before 7.0.5 do run following SQL statement 
+# TODO: if mariadb or mysql was used before 7.0.5 do run following SQL statement
 # ALTER TABLE vc_persistent_record MODIFY persistent_data longtext null, ADD compressed_data longblob null, lock=none
 
-#TODO: message all that server will be upgraded
+# TODO: message all that server will be upgraded
 
-  - name: stop UCDS service
-    become: yes
-    service:
+  - name: Stop UCDS service
+    become: true
+    ansible.builtin.service:
       name: "{{ ucds_service_name }}"
-      enabled: yes
+      enabled: true
       state: stopped
 
-#TODO: ensure that service is stopped
-# Check to ensure that there is no file server.pid in the server_install/var folder. 
+# TODO: ensure that service is stopped
+# Check to ensure that there is no file server.pid in the server_install/var folder.
 # Check for running system processes. For example, on Linux, you can use the netstat or ps commands. For example, if the server is running on port 8443, use the command netstat -nap | grep 8443. You can also run ps -ef | grep server and look for the server system process in the results.
 # If any server processes are still running, stop them.
 
 # wait so that service is stopped!
-  - pause:
+  - name: Wait for service to be stopped
+    ansible.builtin.pause:
       seconds: 60
 
-#TODO: backup database and server 
-# 
-  - name: download jdbc-driver/connector for mariadb/mysql online
-    become: yes
-    get_url:
+# TODO: backup database and server
+
+  - name: Download jdbc-driver/connector for mariadb/mysql online
+    ansible.builtin.get_url:
       url: "https://dev.mysql.com/get/Downloads/Connector-J/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
+      mode: "0640"
     when: base_download_online
 
-  - name: download jdbc-driver/connector for mariadb/mysql offline
-    become: yes
-    copy:
+  - name: Download jdbc-driver/connector for mariadb/mysql offline
+    ansible.builtin.copy:
       src: "{{ mysl_connector_directory }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
-      dest: "{{ download_dir }}"  
+      dest: "{{ download_dir }}"
+      mode: "0640"
     when: not base_download_online
 
-  - name: unzip jdbc-driver/connector for mariadb/mysql
-    become: yes
-    unarchive:
+  - name: Unzip jdbc-driver/connector for mariadb/mysql
+    ansible.builtin.unarchive:
       src: "{{ download_dir }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
       creates: "{{ download_dir }}/{{ mysql_connector_install_dir }}"
-      remote_src: yes
+      remote_src: true
 
-  - name: copy jar file to ucd installation directory
-    become: yes
-    copy:
+  - name: Copy jar file to ucd installation directory
+    ansible.builtin.copy:
       src: "{{ download_dir }}/{{ mysql_connector_install_dir }}/{{ mysql_connector_file_name }}.jar"
       dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/lib/ext/{{ mysql_connector_file_name }}.jar"
-      remote_src: yes
-      force: no
+      remote_src: true
+      force: false
+      mode: "0640"
 
-  - name: update ucd installation properties
-    template: src=install.properties.j2 dest="{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+  - name: Update ucd installation properties
+    ansible.builtin.template:
+      src: templates/install.properties.j2
+      dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
+      mode: '0644'
     vars:
       install_ucd_dir: "{{ install_server_dir }}"
       install_server_web_host: "{{ ucd_server_hostname }}"
@@ -105,25 +106,27 @@
       dbname: "{{ dbserver.ucdserver_dbname }}"
       dbport: "{{ dbserver.mysql_port }}"
 
-  - name: upgrade UCD silently
-    become: yes
-    shell: ./install-server.sh -silent -install-dir {{ install_server_dir }}
+# shell: ./install-server.sh -silent -install-dir {{ install_server_dir }}
+  - name: Upgrade UCD silently
+    ansible.builtin.command: "sh ./install-server.sh -silent -install-dir {{ install_server_dir }}"
     register: ucdsupgradelog
     args:
       chdir: "{{ download_dir }}/{{ ucds_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_upgrade_log_name }}"
-  - name: create ucdsupgrade.log
-    copy:
+
+  - name: Create ucdsupgrade.log
+    ansible.builtin.copy:
       content: "{{  ucdsupgradelog }}"
       dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/{{ ucds_upgrade_log_name }}"
+      mode: '0644'
 
-  - name: start UCDS service
-    become: yes
-    service:
+  - name: Start UCDS service
+    become: true
+    ansible.builtin.service:
       name: "{{ ucds_service_name }}"
-      enabled: yes
+      enabled: true
       state: started
 
-# wait so that service is up and running!
-  - pause:
+  - name: Wait so that service is up and running!
+    ansible.builtin.pause:
       seconds: 60

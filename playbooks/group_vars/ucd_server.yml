@@ -28,7 +28,7 @@ mysql_connector_online_location: "https://dev.mysql.com/get/Downloads/Connector-
 # ucd_version: 7.2.2.1.1131693
 # ucd_version: 7.2.3.0.1133742
 # ibm-ucd-7.3.0.1.1147781
-ucd_version: 7.3.0.1.1147781
+ucd_version: 7.1.2.11.1152541
 ucds_file_name: ibm-ucd-{{ ucd_version }}
 ucds_file_extension: zip
 ucds_install_dir_name: ibm-ucd-install

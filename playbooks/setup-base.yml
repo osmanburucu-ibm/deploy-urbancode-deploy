@@ -4,9 +4,9 @@
   hosts: all
   become: true
   vars_files:
-    - ../group_vars/all.yml
-    - ../group_vars/ucd_server.yml
-    - ../group_vars/db_server.yml
+    - group_vars/all.yml
+    - group_vars/ucd_server.yml
+    - group_vars/db_server.yml
   tasks:
   - name: Install buildtools
     ansible.builtin.include_role:
@@ -45,8 +45,8 @@
     ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
-      - '../vars/{{ ansible_distribution }}.yml'
-      - '../vars/{{ ansible_os_family }}.yml'
+      - 'vars/{{ ansible_distribution }}.yml'
+      - 'vars/{{ ansible_os_family }}.yml'
 
   - name: Verify that prereqs are installed
     ansible.builtin.package:
@@ -61,14 +61,14 @@
     ansible.builtin.include_vars:
       file: "{{ item }}"
     with_first_found:
-      - '../vars/{{ ansible_distribution }}.yml'
-      - '../vars/{{ ansible_os_family }}.yml'
+      - 'vars/{{ ansible_distribution }}.yml'
+      - 'vars/{{ ansible_os_family }}.yml'
   - name: Set variables
     ansible.builtin.include_vars:
       file: "{{ item }}"
     with_items:
-      - '../group_vars/db_server.yml'
-      - '../group_vars/all.yml'
+      - 'group_vars/db_server.yml'
+      - 'group_vars/all.yml'
 
   roles:
     - role: geerlingguy.mysql

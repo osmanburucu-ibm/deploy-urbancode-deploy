@@ -26,7 +26,7 @@ UCD Server and Agent is installed and Agent is set as artifact import agent
 
 Who am I:
 
-~~~
+~~~text
 Ing. Osman Burucu
 DevOps Enthusiast
 email: osman.burucu@at.ibm.com
@@ -64,7 +64,7 @@ IBM Austria, Vienna
   * group_vars/ucd_server.yml
     * ***ucd_installfiles_location*** is set with default to ***{{ all_source_directory }}/UCD***
     * ***mysql_connector_xxx*** which mysql connector to use
-    * ***ucd installation files related variables*** 
+    * ***ucd installation files related variables***
       * ***ucd_version*** which UCD version will be installed. You can get the latest versions from your PA site or from IBM Fixcentral
     * ***install.properties related***
       * set the variables for the silent installation of UCD like, target installation directory, admin user/pwd, ucd server hostname, which ports to use and so on.
@@ -95,3 +95,4 @@ Added a new playbook for upgrading the server in silent mode. Is is based on the
 
 * [another Ansible role for installing mysql, supporting also windows](ansible-galaxy install kaos2oak.mysql)
 * mysql_installers_path_on_target
+* IBM Semeru downloads <https://developer.ibm.com/languages/java/semeru-runtimes/downloads/>

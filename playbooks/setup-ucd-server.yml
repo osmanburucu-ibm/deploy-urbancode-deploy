@@ -6,8 +6,12 @@
 
   - name: Include variables
     ansible.builtin.include_vars:
-      file: ../group_vars/db_server.yml
+      file: group_vars/db_server.yml
       name: dbserver
+
+  - name: Include specific ucd variables
+    ansible.builtin.include_vars:
+      dir: "group_vars"
 
   - name: Create a download directory if not exists
     ansible.builtin.file:
@@ -45,7 +49,7 @@
 
   - name: Download jdbc-driver/connector for mariadb/mysql offline
     ansible.builtin.copy:
-      src: "{{ mysl_connector_directory }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
+      src: "{{ mysql_connector_directory }}/{{ mysql_connector_file_name }}.{{ mysql_connector_file_extension }}"
       dest: "{{ download_dir }}"
       mode: '0644'
     when: not base_download_online
@@ -68,7 +72,7 @@
 
   - name: Update ucd installation properties
     ansible.builtin.template:
-      src: install.properties.j2
+      src: templates/install.properties.j2
       dest: "{{ download_dir }}/{{ ucds_install_dir_name }}/install.properties"
       mode: '0644'
     vars:
@@ -81,7 +85,7 @@
       dbport: "{{ dbserver.mysql_port }}"
 
   - name: Install UCD silently
-    ansible.builtin.command: "sh ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home {{ ansible_env.JAVA_HOME }}"
+    ansible.builtin.command: "sh ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home {{ lookup('ansible.builtin.env', 'JAVA_HOME') }}"
     # shell: ./install-server.sh -silent -install-dir {{ install_server_dir }} -java-home /usr/lib/jvm/jre
     register: ucdsinstalllog
     args:

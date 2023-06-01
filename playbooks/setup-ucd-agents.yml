@@ -1,64 +1,64 @@
 ---
 # TODO: provide the means for multiple agents on single host also!
-- name: install multiple UCD Agents on target hosts 
+- name: Install multiple UCD Agents on target hosts
   hosts: ucd_agent
-  gather_facts: yes
-  become: yes
+  gather_facts: true
+  become: true
   tasks:
 
-  - name: include variables
-    include_vars:
+  - name: Include variables
+    ansible.builtin.include_vars:
       file: group_vars/ucd_server.yml
 
-  - name: create a download directory if not exists
-    become: yes
-    file:
+  - name: Create a download directory if not exists
+#    become: true
+    ansible.builtin.file:
       path: "{{ download_dir }}"
-      state: directory
-      recurse: yes
+      state: "directory"
+      recurse: true
 
-  - name: wait
-    wait_for:
-      host: "{{ ucd_server_hostname }}"
-      port: "{{ install_server_web_https_port }}"
-      timeout: 30
-  - debug: msg=OK
+  - name: Wait for Server to respond
+    ansible.builtin.uri:
+      url: "{{ ucd_server_hostname }}:{{ install_server_web_https_port }}"
+      validate_certs: false
 
-  - name: download ucd-agent from server
-    become: yes
-    get_url:
+  - name: Download ucd-agent from server
+    ansible.builtin.get_url:
       url: "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/tools/{{ ucda_file_name }}"
       dest: "{{ download_dir }}"
-      validate_certs: no
+      validate_certs: false
+      mode: '0644'
 
-  - name: unzip ucd-agent
-    become: yes
-    unarchive:
+  - name: Unzip ucd-agent
+    ansible.builtin.unarchive:
       src: "{{ download_dir }}/{{ ucda_file_name }}"
       dest: "{{ download_dir }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}"
-      remote_src: yes
+      remote_src: true
 
-  - name: update ucd-agent installation properties
-    template: src=agent.install.properties.j2 dest="{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+  - name: Update ucd-agent installation properties
+    ansible.builtin.template:
+       src: agent.install.properties.j2
+       dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/install.properties"
+       mode: '0640'
     vars:
       install_agent_home: "{{ install_agent_dir }}"
-      ucda_name: "{{ inventory_hostname_short }}"
+      ucda_name: "{{ ucd_agent_name }}"
 
-  - name: install AGENT silently
-    become: yes
-    shell: ./install-agent-from-file.sh install.properties
+  - name: Install AGENT silently
+    ansible.builtin.cmd: "sh {{ download_dir }}/{{ ucda_install_dir_name }}/install-agent-from-file.sh install.properties"
     register: ucdainstalllog
     args:
       chdir: "{{ download_dir }}/{{ ucda_install_dir_name }}"
       creates: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
-  - name: create ucdainstall.log
+      
+  - name: Create ucdainstall.log
     copy:
       content: "{{  ucdainstalllog }}"
       dest: "{{ download_dir }}/{{ ucda_install_dir_name }}/{{ ucda_install_log_name }}"
 
-  - name: update AGENT service properties
-    become: yes
+  - name: Update AGENT service properties
+    become: true
     template:
         src: "{{ ucda_service_file }}.j2"
         dest: "/etc/systemd/system/{{ ucda_service_file }}"
@@ -68,23 +68,23 @@
         service_group: "{{ ucd_agent_group }}"
 
   - name: Grant read and execute permissions to AGENT service
-    become: yes
+    become: true
     file:
         path: "/etc/systemd/system/{{ ucda_service_file }}"
         mode: '0755'
 
   - name: Change ownership of AGENT installation directory
-    become: yes
+    become: true
     file:
         path: "{{ install_agent_dir }}"
         owner: "{{ ucd_agent_user }}"
         group: "{{ ucd_agent_group }}"
         
 # TODO:use systemd module from ansible!
-  - name: start AGENT service
-    become: yes
+  - name: Start AGENT service
+    become: true
     service:
       name: "{{ ucda_service_name }}"
-      enabled: yes
+      enabled: true
       state: started
   

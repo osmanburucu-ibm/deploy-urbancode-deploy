@@ -1,42 +1,42 @@
 ---
-- name: install UCD plugins
+- name: Install UCD plugins
   hosts: ucd_server
-#  gather_facts: yes
-  become: yes
+#  gather_facts: true
   tasks:
 
   - name: Include plugin related vars
-    include_vars:
+    ansible.builtin.include_vars:
       file: vars/ucd_plugin_variables.yml
 
-# download plugins 
-  - name: create a plugin download directory if not exists
-    file:
+# download plugins
+  - name: Create a plugin download directory if not exists
+    ansible.builtin.file:
       path: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
       state: directory
-      recurse: yes
+      recurse: true
 
 # TODO: provide for all downloads a local web/file server instead of using ansible host for copy
 # download from remote repo
-  - name: download ucd plugins online
-    get_url:
+  - name: Download ucd plugins online
+    ansible.builtin.get_url:
         url: "{{ ucd_plugins_download_url }}/{{ item.value.directory_name }}/{{ item.value.file_name }}-{{ item.value.version }}.{{ item.value.extension }}"
         dest: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
+        mode: '0640'
     loop: "{{ lookup('dict', ucd_plugins) }}"
     when: base_download_online
 
 # copy from ansible host
-  - name: download ucd plugins offline
-    become: yes
-    copy:
+
+  - name: Download ucd plugins offline
+    ansible.builtin.copy:
         src: "{{ ucd_installfiles_location }}/{{ ucd_plugins_download_directory }}/{{ item.value.file_name }}-{{ item.value.version }}.{{ item.value.extension }}"
         dest: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
     loop: "{{ lookup('dict', ucd_plugins) }}"
     when: not base_download_online
-    
-  - name: import plugins into ucd server
+
+  - name: Import plugins into ucd server
     shell: 'curl -v -k -u  "{{ ucds_admin_user }}:{{ ucds_initial_admin_pwd }}" -X POST -H "Content-Type: multipart/form-data" -F "file=@{{ item.value.name }}-{{ item.value.version }}.{{ item.value.extension }}" "https://{{ ucd_server_hostname }}:{{ install_server_web_https_port }}/rest/plugin/{{ item.value.plugin_type2 }}"'
-    args:  
+    args:
       chdir: "{{ download_dir }}/{{ ucd_plugins_download_directory }}"
     loop: "{{ lookup('dict', ucd_plugins) }}"
 
@@ -48,7 +48,7 @@
   #     method: POST
   #     src: "{{ download_dir }}/{{ ucd_plugins_download_directory }}/{{ item.value.name }}-{{ item.value.version }}.{{ item.value.extension }}"
   #     validate_certs: no
-  #     remote_src: yes
+  #     remote_src: true
   #   loop: "{{ lookup('dict', ucd_plugins) }}"
 
 # alternative for importing plugins, just copy plugins into staging dir then restart ucd server 
